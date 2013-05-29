@@ -20,14 +20,11 @@ int main(int argc, char **argv){
 	int primitiva=0;
 	int modo=-1;
 	 char * accion;
-	//char * accion = "DECRIPT";	
-	char * estenografia = "LSBE";
 	//Mensaje a Cifrar
 	char * ptr = "KarpoyDinu";
-	//Imagen a Utilizar
-	char * imagen_ocultar = "./lena512.bmp";
 	char * imagen_levantar = "./imagennueva.bmp";
-	char * password ="DINU";
+    
+	char * password =args_info->pass_arg;
 	
 	/*
 	 *
