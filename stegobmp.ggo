@@ -1,0 +1,53 @@
+package "stegobmp"
+
+version "0.1"
+
+description "StegoBMP permite ocultar un archivo cualquiera dentro de un archivo .bmp, mediante un m√todo de esteganografiado elegido, con o sin password. Tambien permite estegoanalizar un archivo y extraer el contenido previamente esteganografiado."
+
+defmode "ENCRYPT" modedesc="Modo de encripcion"
+
+modeoption "embed" - "Indica que se ocultara informacion"
+mode="ENCRYPT"
+required 
+
+modeoption "in" - "Archivo que se va a ocultar"
+mode="ENCRYPT"
+string typestr="Input filename"
+required 
+
+defmode "DECRYPT" modedesc="Modo de desencripcion"
+
+modeoption "extract" - "Indica que se extraera la informacion oculta en un BMP"
+mode="DECRYPT"
+required 
+
+option "out" - "Archivo BMP de entrada/salida"
+details="Si el modo de operacion es de encripcion, corresponde al archivo de salida en el que se guardara la informacion; si se esta en el modo de operacion de desencripcion corresponde al archivo en el que se dejara el contenido previamente esteganografiado"
+string typestr="Output filename"
+required 
+
+option "steg" - "Algoritmo de esteganografiado"
+string typestr="Nombre del algoritmo de esteganografiado"
+values="LSB1","LSB4","LSBE"
+required 
+
+option "p" - "Archivo BMP portador"
+string typestr="BMP filename"
+required 
+
+option "a" a "Algoritmo de encripcion"
+string typestr="Nombre del algoritmo de encripcion"
+values="aes128","aes192","aes256","des"
+default="aes128"
+optional
+
+option "m" m "Modo de encadenamiento"
+string typestr="Modo de encadenamiento para OPENSSL"
+values="ecb","cfb","ofb","cbc"
+default="cbc"
+optional
+
+option "pass" - "Password de encripcion"
+string typestr="Password de encripcion"
+optional
+
