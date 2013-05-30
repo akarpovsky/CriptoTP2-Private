@@ -12,26 +12,26 @@
 #include "includes/cmdline.h"
 
 int main(int argc, char **argv){
-
-	//TODO: Agregar el command line para que parsee todo lo pedido;
-	//Parametros cableados
-	int type;
-	int mode;
-	int primitiva=0;
-	int modo=-1;
-	 char * accion;
-	//Mensaje a Cifrar
-	char * ptr = "KarpoyDinu";
-	char * imagen_levantar = "./imagennueva.bmp";
-    
-	char * password =args_info->pass_arg;
 	
-	/*
-	 *
-	 *	Empieza Programa
-	 *
-	 */
-	struct gengetopt_args_info *args_info = malloc(sizeof(struct gengetopt_args_info));
+    struct gengetopt_args_info *args_info = malloc(sizeof(struct gengetopt_args_info));
+
+    //Parametros cableados
+    int type;
+    int mode;
+    int primitiva=0;
+    int modo=-1;
+     char * accion;
+    //Mensaje a Cifrar
+    char * ptr = "KarpoyDinu";
+    char * imagen_levantar = "./imagennueva.bmp";
+    
+    char * password =args_info->pass_arg;
+    
+    /*
+     *
+     *  Empieza Programa
+     *
+     */
 
 	// Levanto argumentos de la linea de comandos
 	if(cmdline_parser(argc, argv, args_info) != 0) {

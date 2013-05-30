@@ -27,7 +27,7 @@
 
 const char *gengetopt_args_info_purpose = "";
 
-const char *gengetopt_args_info_usage = "Usage: stegobmp [OPTIONS]...";
+const char *gengetopt_args_info_usage = "Uso: stegobmp [OPCIONES]...";
 
 const char *gengetopt_args_info_description = "StegoBMP permite ocultar un archivo cualquiera dentro de un archivo .bmp, \nmediante un mÃtodo de esteganografiado elegido, con o sin password. Tambien \npermite estegoanalizar un archivo y extraer el contenido previamente \nesteganografiado.";
 
@@ -469,37 +469,37 @@ cmdline_parser_required2 (struct gengetopt_args_info *args_info, const char *pro
   /* checks for required options */
   if (args_info->ENCRYPT_mode_counter && ! args_info->embed_given)
     {
-      fprintf (stderr, "%s: '--embed' option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--embed' opcion requerida%s\n", prog_name, (additional_error ? additional_error : ""));
       error = 1;
     }
   
   if (args_info->ENCRYPT_mode_counter && ! args_info->in_given)
     {
-      fprintf (stderr, "%s: '--in' option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--in' opcion requerida%s\n", prog_name, (additional_error ? additional_error : ""));
       error = 1;
     }
   
   if (args_info->DECRYPT_mode_counter && ! args_info->extract_given)
     {
-      fprintf (stderr, "%s: '--extract' option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--extract' opcion requerida%s\n", prog_name, (additional_error ? additional_error : ""));
       error = 1;
     }
   
   if (! args_info->out_given)
     {
-      fprintf (stderr, "%s: '--out' option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--out' opcion requerida%s\n", prog_name, (additional_error ? additional_error : ""));
       error = 1;
     }
   
   if (! args_info->steg_given)
     {
-      fprintf (stderr, "%s: '--steg' option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--steg' opcion requerida%s\n", prog_name, (additional_error ? additional_error : ""));
       error = 1;
     }
   
   if (! args_info->p_given)
     {
-      fprintf (stderr, "%s: '--p' option required%s\n", prog_name, (additional_error ? additional_error : ""));
+      fprintf (stderr, "%s: '--p' opcion requerida%s\n", prog_name, (additional_error ? additional_error : ""));
       error = 1;
     }
   
@@ -566,12 +566,12 @@ int update_arg(void *field, char **orig_field,
   if (possible_values && (found = check_possible_values((value ? value : default_value), possible_values)) < 0)
     {
       if (short_opt != '-')
-        fprintf (stderr, "%s: %s argument, \"%s\", for option `--%s' (`-%c')%s\n", 
-          package_name, (found == -2) ? "ambiguous" : "invalid", value, long_opt, short_opt,
+        fprintf (stderr, "%s: %s argumento, \"%s\", para la opcion `--%s' (`-%c')%s\n", 
+          package_name, (found == -2) ? "ambiguo" : "invalido", value, long_opt, short_opt,
           (additional_error ? additional_error : ""));
       else
-        fprintf (stderr, "%s: %s argument, \"%s\", for option `--%s'%s\n", 
-          package_name, (found == -2) ? "ambiguous" : "invalid", value, long_opt,
+        fprintf (stderr, "%s: %s argumento, \"%s\", para la opcion `--%s'%s\n", 
+          package_name, (found == -2) ? "ambiguo" : "invalido", value, long_opt,
           (additional_error ? additional_error : ""));
       return 1; /* failure */
     }
@@ -630,7 +630,7 @@ static int check_modes(
       while (given2[j] >= 0) {
         if (given2[j]) {
           ++errors;
-          fprintf(stderr, "%s: option %s conflicts with option %s\n",
+          fprintf(stderr, "%s: opcion %s en conflicto con opcion %s\n",
                   package_name, options1[i], options2[j]);
         }
         ++j;
@@ -850,7 +850,7 @@ cmdline_parser_internal (
           goto failure;
 
         default:	/* bug: option not considered.  */
-          fprintf (stderr, "%s: option unknown: %c%s\n", CMDLINE_PARSER_PACKAGE, c, (additional_error ? additional_error : ""));
+          fprintf (stderr, "%s: opcion desconocida: %c%s\n", CMDLINE_PARSER_PACKAGE, c, (additional_error ? additional_error : ""));
           abort ();
         } /* switch */
     } /* while */
