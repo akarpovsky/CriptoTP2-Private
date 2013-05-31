@@ -15,3 +15,8 @@
 *.exe
 *.out
 *.app
+
+#Macbook
+*.swp
+*.DS_Store
+*~
