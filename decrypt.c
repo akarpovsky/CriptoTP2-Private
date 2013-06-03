@@ -2,11 +2,11 @@
 #include <string.h>
 #include <openssl/aes.h>
 #include <openssl/des.h>
-#include "./includes/defines.h"
-#include "./includes/encrypt.h"
-#include "./includes/decrypt.h"
+#include "includes/defines.h"
+#include "includes/encrypt.h"
+#include "includes/decrypt.h"
 
-unsigned char * decryptData(char* algorithm,char * mode,char * password,char* encryptedData,unsigned int lenght, char* iv){
+unsigned char * decryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* encryptedData,int lenght, unsigned char* iv){
 
 	int primitive=0;
 	int chaining=-1;
@@ -15,24 +15,26 @@ unsigned char * decryptData(char* algorithm,char * mode,char * password,char* en
 	getOptions(algorithm,mode,&primitive,&chaining,&bits);
 
 	if(primitive==DES){
-		if(chaining==ECB)
-			return mydes_ecb_decrypt(data, lenght, password);
-		else if(chaining== CBC)
-			return mydes_cbc_decrypt(data, lenght, password, iv);
-		else if(chaining== OFB)
-			return mydes_ofb_decrypt(data, lenght, password, iv);
-		else
-			return mydes_cfb_decrypt(data, lenght, password, iv);
-	}else if(primitive==AES){
 
 		if(chaining==ECB)
-			return myaes_ecb_decrypt(data,lenght,password,bits);
+			return (unsigned char*) mydes_ecb_decrypt(encryptedData, lenght, password);
+		else if(chaining== CBC)
+			return (unsigned char*) mydes_cbc_decrypt(encryptedData, lenght, password, iv);
+		else if(chaining== OFB)
+			return (unsigned char*) mydes_ofb_decrypt(encryptedData, lenght, password, iv);
+		else
+			return (unsigned char*) mydes_cfb_decrypt(encryptedData, lenght, password, iv);
+	}
+	if(primitive==AES){
+
+		if(chaining==ECB)
+			return (unsigned char*) myaes_ecb_decrypt(encryptedData,lenght,password,bits);
 		else if(chaining==CBC)
-			return myaes_cbc_decrypt(data,lenght,password,iv,bits);
+			return (unsigned char*) myaes_cbc_decrypt(encryptedData,lenght,password,iv,bits);
 		else if(chaining==OFB)
-			return myaes_ofb_decrypt(data,lenght,password,iv,bits);
+			return (unsigned char*) myaes_ofb_decrypt(encryptedData,lenght,password,iv,bits);
 		else 
-			return myaes_cfb_decrypt(data,lenght,password,iv,bits);
+			return (unsigned char*) myaes_cfb_decrypt(encryptedData,lenght,password,iv,bits);
 	}
 }
 

@@ -7,10 +7,10 @@ LDIR=lib
 
 LIBS=-lm -lcrypto
 
-_DEPS= cmdline.h embed.h extract.h imageutils.h defines.h encrypt.h
+_DEPS= cmdline.h embed.h extract.h imageutils.h defines.h encrypt.h decrypt.h
 DEPS=$(patsubst %, $(IDIR)/%,$(_DEPS))
 
-_OBJ= main.o cmdline.o embed.o extract.o imageutils.o encrypt.o
+_OBJ= main.o cmdline.o embed.o extract.o imageutils.o encrypt.o decrypt.o 
 OBJ=$(patsubst %, $(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o:	%.c $(DEPS)
