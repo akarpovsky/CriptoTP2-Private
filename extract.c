@@ -1,5 +1,5 @@
 #include "includes/defines.h"
-#include "includes/decrypt.h"
+#include "includes/extract.h"
 #include <math.h>
 
 int decrypt_LSBE(BmpImage image){

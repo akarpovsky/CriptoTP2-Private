@@ -17,10 +17,8 @@
 #define RGB_LSB4 12
 #define TRUE 8
 #define FALSE 0
-#define AES128 1
-#define AES192 2
-#define AES256 3
-#define DES 4
+#define AES 1
+#define DES 2
 #define NO_ENCRYPTION 0
 #define CBC 0
 #define OFB 1	

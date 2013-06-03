@@ -1,5 +1,5 @@
-#ifndef _DECRYPT_H_
-#define _DECRYPT_H_
+#ifndef _EXTRACT_H_
+#define _EXTRACT_H_
 
 #include "imageutils.h"
 

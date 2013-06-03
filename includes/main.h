@@ -4,6 +4,5 @@
 #include "cmdline.h"
 
 void getStenographyMode(char* estenografia, int* mode);
-void getPrimiteAndMode(char* primitive, char* chaining , int* primitiva, int* modo);
 void printUserArguments(struct gengetopt_args_info *args_info);
 #endif
