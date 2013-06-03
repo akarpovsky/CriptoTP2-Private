@@ -6,9 +6,9 @@
 #include "./includes/encrypt.h"
 
 unsigned char*
-encryptData( const char* algorithm,const char * mode,const  char * password,const  char* data, const unsigned int lenght){
+encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int lenght){
 
-	unsigned char encryptedData=NULL;
+	unsigned char* encryptedData = NULL;
 	int primitive=0;
 	int chaining=-1;
 	int bits=0;

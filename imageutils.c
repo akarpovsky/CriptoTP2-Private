@@ -71,7 +71,7 @@ load_bmp_image(BmpImage im)
     }
 
     fclose(fp);
-    return 0;
+    return LOADING_OK;
 }
 
 int
