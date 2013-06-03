@@ -6,7 +6,7 @@
 #include "./includes/encrypt.h"
 
 unsigned char*
-encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int lenght){
+encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int lenght, char * iv){
 
 	
 	int primitive=0;
@@ -19,21 +19,21 @@ encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int 
 		if(chaining==ECB)
 			return mydes_ecb_encrypt(data, lenght, password);
 		else if(chaining== CBC)
-			return mydes_cbc_encrypt(data, lenght, password, "a");
+			return mydes_cbc_encrypt(data, lenght, password, iv);
 		else if(chaining== OFB)
-			return mydes_ofb_encrypt(data, lenght, password, "a");
+			return mydes_ofb_encrypt(data, lenght, password, iv);
 		else
-			return mydes_cfb_encrypt(data, lenght, password, "a");
+			return mydes_cfb_encrypt(data, lenght, password, iv);
 	}else if(primitive==AES){
 
 		if(chaining==ECB)
 			return myaes_ecb_encrypt(data,lenght,password,bits);
 		else if(chaining==CBC)
-			return myaes_cbc_encrypt(data,lenght,password,"a",bits);
+			return myaes_cbc_encrypt(data,lenght,password,iv,bits);
 		else if(chaining==OFB)
-			return myaes_ofb_encrypt(data,lenght,password,"a",bits);
+			return myaes_ofb_encrypt(data,lenght,password,iv,bits);
 		else 
-			return myaes_cfb_encrypt(data,lenght,password,"a",bits);
+			return myaes_cfb_encrypt(data,lenght,password,iv,bits);
 	}
 	
 			
