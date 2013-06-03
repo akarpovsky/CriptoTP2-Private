@@ -1,428 +1,226 @@
-#include "includes/defines.h"
-#include "includes/decrypt.h"
-#include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <openssl/aes.h>
+#include <openssl/des.h>
+#include "./includes/defines.h"
+#include "./includes/encrypt.h"
+#include "./includes/decrypt.h"
 
-int decrypt_LSBE(BmpImage image){
+unsigned char * decryptData(char* algorithm,char * mode,char * password,char* encryptedData,unsigned int lenght, char* iv){
 
-    //Recupero el mensaje;
-    int i,j,k,h, bit_array_size;
-    char * aux2 = calloc (1,32);
-    char * aux3 = calloc (1,64);
-    char * ans_extension = calloc(1,64);
-    int * tamanio = calloc(1,sizeof(int));
-    int ocultar = FALSE;
-    h = 0;
+	int primitive=0;
+	int chaining=-1;
+	int bits=0;
+	
+	getOptions(algorithm,mode,&primitive,&chaining,&bits);
 
-    //Leo los primeros 32 para obtener el size;
-     for( j=0; j<image->height && h<32; j++ ) {
-        for( i=0; i<image->width && h<32; i++) {
-            if ( image->bitmap[(j*image->width) + i].red >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                
-                ocultar--;
-                aux2[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            }
-            if ( image->bitmap[(j*image->width) + i].green >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                
-                ocultar--;
-                aux2[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            }   
-            if ( image->bitmap[(j*image->width) + i].blue >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                
-                ocultar--;
-                aux2[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-            }       
-                
-        }
-    //  if (h < bit_array_size)
-    //      i=0;
-    }
+	if(primitive==DES){
+		if(chaining==ECB)
+			return mydes_ecb_decrypt(data, lenght, password);
+		else if(chaining== CBC)
+			return mydes_cbc_decrypt(data, lenght, password, iv);
+		else if(chaining== OFB)
+			return mydes_ofb_decrypt(data, lenght, password, iv);
+		else
+			return mydes_cfb_decrypt(data, lenght, password, iv);
+	}else if(primitive==AES){
 
-    //Transformo los bits a un numero int concreto
-    int total=0;
-    for ( k = 0; k < 32; k++){
-        printf("%d",aux2[k]);
-        if ( (aux2[k]%2) == 1){
-            total += pow(2,(31-k));
-        }
-    }
-    putchar(10);
-    //Armo el array para contener el mensaje
-    bit_array_size = total;
-    printf("FINAL TAM:%d AND H:%d\n", total,h);
-    char * aux = calloc (1,bit_array_size); 
-    char * respuesta = calloc (1,bit_array_size);
-
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-    //Leo el mensaje en base al tamanio obtenido anteriormente
-     for(; j<image->height && h<bit_array_size; j++ ) {
-        for(; i<image->width && h<bit_array_size; i++) {
-            if ( image->bitmap[(j*image->width) + i].red >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                ocultar--;
-                aux[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            }
-            if ( image->bitmap[(j*image->width) + i].green >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                ocultar--;
-                aux[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            }   
-            if ( image->bitmap[(j*image->width) + i].blue >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                ocultar--;
-                aux[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-            }       
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    printf("H: %d\n",h);
-    for ( k = 0; k < h; k++){
-        printf("%d",aux[k]);
-    }
-    putchar(10);
-    int var;
-    for ( k = 0; k < h; k++){
-        
-        if ( (aux[k]%2) == 1){
-            if(k<8){
-                respuesta[0] |= 1 << (7-(k%8));
-            }else{
-                int var = k/8;
-                respuesta[var] |= 1 << (7-(k%8));
-            }
-        }
-    }
-
-    //Parseo la extension
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-
-     for(; j<image->height && h<32; j++ ) {
-        for(; i<image->width && h<32; i++) {
-        //  printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
-            if ( image->bitmap[(j*image->width) + i].red >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                ocultar--;
-                aux3[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            }
-            if ( image->bitmap[(j*image->width) + i].green >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                ocultar--;
-                aux3[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            }   
-            if ( image->bitmap[(j*image->width) + i].blue >= 254 || ocultar != FALSE){
-                if ( ocultar == FALSE ){
-                    ocultar = TRUE; 
-                }
-                ocultar--;
-                aux3[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-            }       
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    for ( k = 0; k < h; k++){
-        printf("%d ", aux3[k]);
-        if ( (aux3[k]%2) == 1){
-            if(k<8){
-                ans_extension[0] |= 1 << (7-(k%8));
-            }else{
-                int var = k/8;
-                ans_extension[var] |= 1 << (7-(k%8));
-            }
-        }
-    }
-    
-
-
-    printf("texto:%s\n", respuesta);
-    printf("ext:%s\n", ans_extension);
-
-    char example[100];
-    strcpy (example,"respuesta");
-    strcat (example,ans_extension);
-    FILE * salida = fopen(example, "wb");
-    FCHK(fwrite(respuesta, bit_array_size, 1, salida)); 
-
-
+		if(chaining==ECB)
+			return myaes_ecb_decrypt(data,lenght,password,bits);
+		else if(chaining==CBC)
+			return myaes_cbc_decrypt(data,lenght,password,iv,bits);
+		else if(chaining==OFB)
+			return myaes_ofb_decrypt(data,lenght,password,iv,bits);
+		else 
+			return myaes_cfb_decrypt(data,lenght,password,iv,bits);
+	}
 }
 
-int decrypt_LSB4(BmpImage image){
+unsigned char *
+myaes_ecb_decrypt(unsigned char * enc, int length, unsigned char * password, int bits)
+{
+        unsigned char outbuf[16];
+        unsigned char * ret = malloc(length);
 
-    //Recupero el mensaje;
-    int i,j,k,h, bit_array_size;
-    h = 0;
-    char * aux2 = calloc (1,64);
-    char * aux3 = calloc (1,64);
-    char * ans_extension = calloc(1,64);
-    int * tamanio = calloc(1,sizeof(int));
-    
+        AES_KEY aeskey;
+       
+        int i = 0;
+        int blocks = length/16;
 
-    //Leo los primeros 32 para obtener el size;
-     for( j=0; j<image->height && h<36; j++ ) {
-        for( i=0; i<image->width && h<36; i++) {
-            printf("valor:%d\n", image->bitmap[(j*image->width) + i].red);
-            aux2[h++] = (image->bitmap[(j*image->width) + i].red & (char)8) >> 3;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].red & (char)4) >> 2;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].red & (char)2) >> 1;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].red & (char)1) >> 0;
-            
-            aux2[h++] = (image->bitmap[(j*image->width) + i].green & (char)8) >> 3;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].green & (char)4) >> 2;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].green & (char)2) >> 1;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].green & (char)1) >> 0;
+        AES_set_decrypt_key(password, bits, &aeskey);
 
-            aux2[h++] = (image->bitmap[(j*image->width) + i].blue & (char)8) >> 3;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].blue & (char)4) >> 2;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].blue & (char)2) >> 1;
-            aux2[h++] = (image->bitmap[(j*image->width) + i].blue & (char)1) >> 0;
+        for(i=0;i<blocks;i++)
+        {
+
+                AES_ecb_encrypt(enc+i*16, outbuf, &aeskey, AES_DECRYPT);
+                memcpy(ret+i*16,outbuf,16);
         }
-    }
-    putchar(10);
-    for ( k = 0; k < 32; k++){
-        printf("%d", aux2[k]);
-    }
-    putchar(10);
 
-    //Transformo los bits a un numero int concreto
-    int total=0;
-    for ( k = 0; k < 32; k++){
-        if ( (aux2[k]%2) == 1){
-            printf("imprime:%d\n",k);
-            total += pow(2,(31-k));
-        }
-    }
-
-    //Armo el array para contener el mensaje
-    bit_array_size = total;
-    printf("\nFINAL TAM:%d\n", total);
-    char * aux = calloc (1,bit_array_size); 
-    char * respuesta = calloc (1,bit_array_size);
-
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-
-    //Leo el mensaje en base al tamanio obtenido anteriormente
-     for(; j<image->height && h<bit_array_size; j++ ) {
-        for(; i<image->width && h<bit_array_size; i++) {
-            aux[h++] = (image->bitmap[(j*image->width) + i].red & (char)8) >> 3;
-            aux[h++] = (image->bitmap[(j*image->width) + i].red & (char)4) >> 2;
-            aux[h++] = (image->bitmap[(j*image->width) + i].red & (char)2) >> 1;
-            aux[h++] = (image->bitmap[(j*image->width) + i].red & (char)1) >> 0;
-            
-            aux[h++] = (image->bitmap[(j*image->width) + i].green & (char)8) >> 3;
-            aux[h++] = (image->bitmap[(j*image->width) + i].green & (char)4) >> 2;
-            aux[h++] = (image->bitmap[(j*image->width) + i].green & (char)2) >> 1;
-            aux[h++] = (image->bitmap[(j*image->width) + i].green & (char)1) >> 0;
-
-            aux[h++] = (image->bitmap[(j*image->width) + i].blue & (char)8) >> 3;
-            aux[h++] = (image->bitmap[(j*image->width) + i].blue & (char)4) >> 2;
-            aux[h++] = (image->bitmap[(j*image->width) + i].blue & (char)2) >> 1;
-            aux[h++] = (image->bitmap[(j*image->width) + i].blue & (char)1) >> 0;
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    printf("H: %d\n",h);
-    for ( k = 0; k < h; k++){
-        printf("%d",aux[k]);
-    }
-    putchar(10);
-
-    for ( k = 0; k < h; k++){
-        if ( (aux[k]%2) == 1){
-            if(k<8){
-                respuesta[0] |= 1 << (7-(k%8));
-            }else{
-                int var = k/8;
-                respuesta[var] |= 1 << (7-(k%8));
-            }
-        }
-    }
-
-    //Parseo la extension
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-
-     for(; j<image->height && h<32; j++ ) {
-        for(; i<image->width && h<32; i++) {
-        //  printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
-            aux3[h++] = (image->bitmap[(j*image->width) + i].red & (char)8) >> 3;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].red & (char)4) >> 2;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].red & (char)2) >> 1;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].red & (char)1) >> 0;
-            
-            aux3[h++] = (image->bitmap[(j*image->width) + i].green & (char)8) >> 3;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].green & (char)4) >> 2;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].green & (char)2) >> 1;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].green & (char)1) >> 0;
-
-            aux3[h++] = (image->bitmap[(j*image->width) + i].blue & (char)8) >> 3;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].blue & (char)4) >> 2;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].blue & (char)2) >> 1;
-            aux3[h++] = (image->bitmap[(j*image->width) + i].blue & (char)1) >> 0;
-        }
-        if (h < bit_array_size)
-            i=0;
-
-    }
-
-    for ( k = 0; k < h; k++){
-        if ( (aux3[k]%2) == 1){
-            if(k<8){
-                ans_extension[0] |= 1 << (7-(k%8));
-            }else{
-                int var = k/8;
-                ans_extension[var] |= 1 << (7-(k%8));
-            }
-        }
-    }
-    
-
-
-    printf("texto:%s\n", respuesta);
-    printf("ext:%s\n", ans_extension);
-
-    char example[100];
-    strcpy (example,"respuesta");
-    strcat (example,ans_extension);
-    FILE * salida = fopen(example, "wb");
-    FCHK(fwrite(respuesta, bit_array_size, 1, salida)); 
-
+        return ret;
 }
 
-int
-decrypt_LSB1(BmpImage image){
+unsigned char *
+myaes_cbc_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned char * iv, int bits)
+{
+        unsigned char * ret;
+        unsigned char * outbuf = malloc(length);
 
-    //Recupero el mensaje;
-    int i,j,k,h, bit_array_size;
-    h = 0;
-    char * aux2 = calloc (1,32);
-    char * aux3 = calloc (1,64);
-    char * ans_extension = calloc(1,64);
-    int * tamanio = calloc(1,sizeof(int));
-    
+        unsigned char liv[16];
 
-    //Leo los primeros 32 para obtener el size;
-     for( j=0; j<image->height && h<32; j++ ) {
-        for( i=0; i<image->width && h<32; i++) {
-            aux2[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            aux2[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            aux2[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
+        memcpy(liv,iv,16);
 
-    //Transformo los bits a un numero int concreto
-    int total=0;
-    for ( k = 0; k < 32; k++){
-        if ( (aux2[k]%2) == 1){
-            total += pow(2,(31-k));
-        }
-    }
+        AES_KEY aeskey;
+       
+        memset(outbuf, 0, sizeof(outbuf));
+       
+        AES_set_decrypt_key(key, bits, &aeskey);
 
-    //Armo el array para contener el mensaje
-    bit_array_size = total;
-    printf("FINAL TAM:%d", total);
-    char * aux = calloc (1,bit_array_size); 
-    char * respuesta = calloc (1,bit_array_size);
-
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-
-    //Leo el mensaje en base al tamanio obtenido anteriormente
-     for(; j<image->height && h<bit_array_size; j++ ) {
-        for(; i<image->width && h<bit_array_size; i++) {
-            //printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
-            aux[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            aux[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            aux[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    printf("H: %d\n",h);
-    for ( k = 0; k < h; k++){
-        printf("%d",aux[k]);
-    }
-
-    for ( k = 0; k < h; k++){
-        if ( (aux[k]%2) == 1){
-            if(k<8){
-                respuesta[0] |= 1 << (7-(k%8));
-            }else{
-                int var = k/8;
-                respuesta[var] |= 1 << (7-(k%8));
-            }
-        }
-    }
-
-    //Parseo la extension
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-
-     for(; j<image->height && h<32; j++ ) {
-        for(; i<image->width && h<32; i++) {
-        //  printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
-            aux3[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            aux3[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            aux3[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    for ( k = 0; k < h; k++){
-        if ( (aux3[k]%2) == 1){
-            if(k<8){
-                ans_extension[0] |= 1 << (7-(k%8));
-            }else{
-                int var = k/8;
-                ans_extension[var] |= 1 << (7-(k%8));
-            }
-        }
-    }
-    
-
-
-    printf("texto:%s\n", respuesta);
-    printf("ext:%s\n", ans_extension);
-
-    char example[100];
-    strcpy (example,"respuesta");
-    strcat (example,ans_extension);
-    FILE * salida = fopen(example, "wb");
-    FCHK(fwrite(respuesta, bit_array_size, 1, salida)); 
-
+        AES_cbc_encrypt(enc, outbuf, length, &aeskey, liv, AES_DECRYPT);
+               
+        ret = outbuf;
+       
+        return ret;
 }
+
+unsigned char *
+myaes_cfb_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned char * iv, int bits)
+{
+        unsigned char * outbuf= calloc(1,length);
+        int num = 0;
+
+        unsigned char liv[16];
+
+        memcpy(liv,iv,16);
+
+        AES_KEY aeskey;
+       
+       
+        AES_set_encrypt_key(key, bits, &aeskey);
+
+        AES_cfb128_encrypt(enc, outbuf, length, &aeskey, liv, &num, AES_DECRYPT);
+
+        return outbuf;
+}
+
+unsigned char *
+myaes_ofb_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned char * iv, int bits)
+{
+        unsigned char * outbuf= calloc(1,length);
+        int num = 0;
+
+        unsigned char liv[16];
+
+        memcpy(liv,iv,16);
+
+        AES_KEY aeskey;
+
+
+        AES_set_encrypt_key(key, bits, &aeskey);
+
+        AES_ofb128_encrypt(enc, outbuf, length, &aeskey, liv, &num);
+
+        return outbuf;
+}
+
+unsigned char *
+mydes_ecb_decrypt(unsigned char * enc, int length, unsigned char * password)
+{
+        unsigned char * out;
+        unsigned char * key;
+       
+        out = malloc(length);
+       
+        key = malloc(8);
+        memcpy((char *)key, password, 8);
+
+        DES_key_schedule * schedule;
+        schedule = malloc(sizeof(DES_key_schedule));
+       
+        DES_key_sched((const_DES_cblock *)key, (DES_key_schedule *)schedule);
+
+        int blocks = length/8;
+        int i;
+       
+        for(i=0;i<blocks;i++)
+        {
+                DES_ecb_encrypt((const_DES_cblock *)(enc+8*i), (DES_cblock *)(out+i*8), schedule, DES_DECRYPT);
+        }
+       
+        return out;
+}
+
+unsigned char *
+mydes_cbc_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned char * iv)
+{      
+        unsigned char * out;
+        out = malloc(length);
+        unsigned char liv[8];
+
+        memcpy(liv,iv,8);
+
+        unsigned char * deskey;
+       
+        deskey = malloc(8);
+        memcpy((char *)deskey, key, 8);
+
+        DES_key_schedule * schedule;
+        schedule = malloc(sizeof(DES_key_schedule));
+       
+        DES_key_sched((const_DES_cblock *)deskey, (DES_key_schedule *)schedule);
+
+       
+       
+        DES_ncbc_encrypt(enc, out, length, schedule, (DES_cblock *)liv, DES_DECRYPT);
+               
+        return out;
+}
+
+unsigned char *
+mydes_cfb_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned char * iv)
+{
+        unsigned char * out;
+        out = malloc(length);
+        unsigned char liv[8];
+
+        memcpy(liv,iv,8);
+
+        unsigned char * deskey;
+       
+        deskey = malloc(8);
+        memcpy((char *)deskey, key, 8);
+
+        DES_key_schedule * schedule;
+        schedule = malloc(sizeof(DES_key_schedule));
+       
+        DES_key_sched((const_DES_cblock *)deskey, (DES_key_schedule *)schedule);
+
+        DES_cfb_encrypt(enc, out, 8, length, schedule, (DES_cblock *)liv, DES_DECRYPT);
+       
+        return out;
+}
+
+unsigned char *
+mydes_ofb_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned char * iv)
+{
+        unsigned char * out;
+        out = malloc(length);
+        unsigned char liv[8];
+
+        memcpy(liv,iv,8);
+
+        unsigned char * deskey;
+       
+        deskey = malloc(8);
+        memcpy((char *)deskey, key, 8);
+
+        DES_key_schedule * schedule;
+        schedule = malloc(sizeof(DES_key_schedule));
+       
+        DES_key_sched((const_DES_cblock *)deskey, (DES_key_schedule *)schedule);
+
+        DES_ofb_encrypt(enc, out, 8, length, schedule, (DES_cblock *)liv);
+       
+        return out;
+}
+
+

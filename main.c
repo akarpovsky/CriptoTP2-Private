@@ -4,12 +4,14 @@
 #include <string.h>
 #include <math.h>
 
+#include "includes/encrypt.h"
 #include "includes/defines.h"
 #include "includes/imageutils.h"
-#include "includes/encrypt.h"
-#include "includes/decrypt.h"
+#include "includes/embed.h"
+#include "includes/extract.h"
 #include "includes/main.h"
 #include "includes/cmdline.h"
+#include "includes/decrypt.h"
 
 int main(int argc, char **argv){
 	
@@ -56,16 +58,10 @@ int main(int argc, char **argv){
 	//Completo el modo (steg_orig guarda el algoritmo de esteganografiado)
 	getStenographyMode(args_info->steg_arg,&mode);
 
-	getPrimiteAndMode(args_info->a_arg,args_info->m_arg,&primitiva,&modo);
-
 	
-	
-
 	int i,j,h,k;
 
-
 	if ( type == ENCRIPT){
-
 
         StegoFileT * sfile;
         unsigned char * in, * out;
@@ -211,15 +207,18 @@ int main(int argc, char **argv){
         	}
     	}
 
-        //Actualizo el tamanio total
-        bit_array_size = h;
-        for( k = 0; k<bit_array_size;k++)
-        	printf("%c", bit_array[k]);
-        putchar(10);
-    	
-    //	char* encryptedData=NULL;
-    //	if(primitive!= NO_ENCRYPTION)
-    //		encryptedData=encryptData(primitiva,modo,bit_array);
+	
+
+    //Actualizo el tamanio total
+    bit_array_size = h;
+    for( k = 0; k<bit_array_size;k++)
+    	printf("%c", bit_array[k]);
+    putchar(10);
+	
+	char* encryptedData=NULL;
+	if(password != NULL){
+		//encryptedData=encryptData(primitiva,modo,bit_array);
+	}
 
         	
         	//Chequeo que se pueda almacenar la informacion en la imagen.
@@ -267,33 +266,7 @@ int main(int argc, char **argv){
 	printf("Fin del Programa\n");
 }
 
-void
-getPrimiteAndMode(char* primitive, char* chaining , int* primitiva, int* modo){
-if(primitive !=NULL){
-		if( strcmp(primitive,"aes128")==0){
-			*primitiva= AES128;
-		}else if ( strcmp(primitive,"aes192")==0){
-			*primitiva= AES192;
-		}else if ( strcmp(primitive,"aes256")==0){
-			*primitiva= AES256;
-		}else if ( strcmp(primitive,"des")==0){
-			*primitiva= DES;
-		}
 
-		if(chaining !=NULL){
-			if( strcmp(chaining,"ecb")==0){
-				*modo=ECB;
-			}else if(strcmp(chaining,"cfb")==0){
-				*modo=CBF;
-			}else if(strcmp(chaining,"ofb")==0){
-				*modo=OFB;
-			}else if(strcmp(chaining,"cbc")==0){
-				*modo=CBC;
-		}else
-			*modo=CBC;
-		}
-	}
-}
 void
 getStenographyMode(char* estenografia, int* mode){
 if ( strcmp(estenografia,"LSB1") == 0){

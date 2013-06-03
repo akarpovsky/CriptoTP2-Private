@@ -7,10 +7,10 @@ LDIR=lib
 
 LIBS=-lm -lcrypto
 
-_DEPS= cmdline.h decrypt.h encrypt.h imageutils.h defines.h
+_DEPS= cmdline.h embed.h extract.h imageutils.h defines.h encrypt.h
 DEPS=$(patsubst %, $(IDIR)/%,$(_DEPS))
 
-_OBJ= main.o cmdline.o decrypt.o encrypt.o imageutils.o
+_OBJ= main.o cmdline.o embed.o extract.o imageutils.o encrypt.o
 OBJ=$(patsubst %, $(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o:	%.c $(DEPS)
@@ -27,3 +27,4 @@ clean:
 	rm -f $(ODIR)/*.o *~ core $(INCDIR) /*~
 	rm -fr $(ODIR)
 	mkdir obj
+
