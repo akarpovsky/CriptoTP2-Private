@@ -123,11 +123,14 @@ duplicate(BmpImage im, char * filename) {
 
 void 
 print_bmp_image(BmpImage im) {
-    printf("Width: %d\n", im->width);
-    printf("Height: %d\n", im->height);
-    printf("Pixel_bits: %d\n", im->pixel_bits);
-    printf("Size: %d\n", im->image_size);
-    printf("Header size: %d\n", im->header_size);
+    printf("\n*************** IMAGE DATA ***************\n");
+    printf("\tFilename: %s\n", im->filename);
+    printf("\tWidth: %d\n", im->width);
+    printf("\tHeight: %d\n", im->height);
+    printf("\tPixel_bits: %d\n", im->pixel_bits);
+    printf("\tSize: %d\n", im->image_size);
+    printf("\tHeader size: %d\n", im->header_size);
+    printf("******************************************\n\n");
 }
 
 void

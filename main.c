@@ -89,10 +89,9 @@ int main(int argc, char **argv){
 
         int endianSize = ntohl(sfile -> fileSize);
 
-        // transfer into one chunk of data the file size indicator, file contents and file extension
+        // Copio el filesize y el contenido del mismo
         memcpy(in, &endianSize, 4);
         memcpy(in + sizeof(DWORD), sfile -> fileContents, sfile -> fileSize);
-        memcpy(in + sizeof(DWORD) + sfile -> fileSize, sfile -> extension, strlen(sfile -> extension));
 
         //Calculo Padding
         int padding_size;
@@ -129,13 +128,14 @@ int main(int argc, char **argv){
         //Imprimo informacion sobre la imagen
         print_bmp_image(image);
 
-        ptr = in;
+        // Me muevo 4 bytes para pasar directamente al texto!
+        ptr = in + sizeof(int);
 
 
     	//ARMO EL VECTOR CON LOS BITS
     	//PRIMERO ME QUEDO CON EL TAMANIO
     	h =0;
-        printf("%d => ", file_size);
+        printf("File size: %d => ", file_size);
        	for(i = 31; i >= 0; --i){
                 if (file_size & 1 << i){
                 	bit_array[h] = '1';
@@ -160,6 +160,7 @@ int main(int argc, char **argv){
         
         int size_length = h;
 
+        printf("Message bits: \n");
         //LUEGO PONGO LOS BITS DEL MENSAJE
     	for(; *ptr != 0; ++ptr)
         {
@@ -182,6 +183,7 @@ int main(int argc, char **argv){
         	bit_array[h] = '0';
         }
 
+        printf("Extension bits: \n");
          //LUEGO PARSEO LA EXTENSION
         for(; *extension != 0; ++extension)
         {
@@ -209,24 +211,27 @@ int main(int argc, char **argv){
 
 	
 
-    //Actualizo el tamanio total
-    bit_array_size = h;
-    for( k = 0; k<bit_array_size;k++)
-    	printf("%c", bit_array[k]);
-    putchar(10);
-	
-	char* encryptedData=NULL;
-	if(password != NULL){
-		//encryptedData=encryptData(primitiva,modo,bit_array);
-	}
+            //Actualizo el tamanio total
+            bit_array_size = h;
+            for( k = 0; k<bit_array_size;k++)
+            	printf("%c", bit_array[k]);
+            putchar(10);
+        	
+        	char* encryptedData=NULL;
+        	if(password != NULL){
+        		//encryptedData=encryptData(primitiva,modo,bit_array);
+        	}
 
         	
-        	//Chequeo que se pueda almacenar la informacion en la imagen.
-        	//TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE
-        	if ( image_capacity < bit_array_size){
+            printf("bit_array_size = %d bits.\n", bit_array_size);
+            //Chequeo que se pueda almacenar la informacion en la imagen.
+            //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE
+            if ( image_capacity < bit_array_size){
                 fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
                 exit(EXIT_FAILURE);
-    		}
+            }
+
+
        		
        		//Llamo a la funcion correspondiente dependiendo del modo
         	if ( mode == LSB1 ){
