@@ -29,5 +29,4 @@ unsigned char * mydes_cbc_encrypt(unsigned char * text, int length, unsigned cha
 unsigned char * mydes_cfb_encrypt(unsigned char * text, int length, unsigned char * key, unsigned char * iv);
 unsigned char * mydes_ofb_encrypt(unsigned char * text, int length, unsigned char * key, unsigned char * iv);
 
-
 #endif
