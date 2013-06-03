@@ -22,7 +22,7 @@ int main(int argc, char **argv){
     int modo=-1;
      char * accion;
     //Mensaje a Cifrar
-    char * ptr = "KarpoyDinu";
+    char * ptr;
     char * imagen_levantar = args_info->out_arg;
     
     char * password =args_info->pass_arg;
@@ -59,53 +59,82 @@ int main(int argc, char **argv){
 	getPrimiteAndMode(args_info->a_arg,args_info->m_arg,&primitiva,&modo);
 
 	
-	//Calculo Padding
-	int padding_size;
-	if ( mode == LSBE){
-		padding_size = LSBE;
-	}else{
-		padding_size = mode * RGB;	
-	} 
-
-	//Abro la imagen
-	BmpImage image = create_bmp_image(args_info->p_arg);
-	//Cargo la imagen
-	if(load_bmp_image(image) != LOADING_OK){
-        fprintf(stderr, "Error: No se ha podido cargar la imagen portadora. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
-        exit(EXIT_FAILURE);
-    }
-
-
-	//Calculo capacidad de la imagen
-	int image_capacity = image->width * image->height * mode;
-
-
-	//Hace que el size sea múltiplo de LSB correspondiente y agrega padding
-	int bit_array_size;
-	int message_size = (strlen(ptr)*CHAR_BITS) + (padding_size-(strlen(ptr)*CHAR_BITS)%padding_size);
 	
-
-	int file_size;
-	file_size = message_size;
-	char * extension = ".txt";
-	char * bit_array = malloc(32+padding_size+strlen(ptr)*CHAR_BITS+strlen(extension)*CHAR_BITS);
-
-	//Imprimo informacion sobre la imagen
-	print_bmp_image(image);
 
 	int i,j,h,k;
 
 
 	if ( type == ENCRIPT){
 
-        FILE *fp;
 
-        fp = fopen(args_info->in_arg, "rb");
+        StegoFileT * sfile;
+        unsigned char * in, * out;
+        int outl, inl, padsize;
 
-        if(fp == NULL){
-            fprintf(stderr, "Error: No se ha podido abrir el archivo \"%s\" que se desea ocultar (--in).\n\n", args_info->in_arg);
+        // Reads in the file to be hidden
+
+        if ( (sfile = readStegoFile(args_info->in_arg)) == NULL)
+        {
+            fprintf(stderr, "Error al leer el archivo archivo a encriptar: \"%s\".\n\n", args_info->in_arg);
             exit(EXIT_FAILURE);
         }
+
+        // calculate size of file size indicator + file contents + file extension length + \0
+        inl = sizeof(DWORD) + sfile -> fileSize + strlen(sfile -> extension) + 1;
+        printf("Espacio necesario para esteganografiar el archivo \"%s\" = %d.\n\n",args_info->in_arg, inl);
+
+        // allocs space to hold fsize indicator, file contents, fextension and \0
+
+        if ( (in = calloc(1, inl)) == NULL )
+        {
+            fprintf(stderr, "Memoria insuficiente para esteganografiado del archivo \"%s\"\n", args_info->in_arg);
+            freeStegoFile(sfile);
+        }
+
+        int endianSize = ntohl(sfile -> fileSize);
+
+        // transfer into one chunk of data the file size indicator, file contents and file extension
+        memcpy(in, &endianSize, 4);
+        memcpy(in + sizeof(DWORD), sfile -> fileContents, sfile -> fileSize);
+        memcpy(in + sizeof(DWORD) + sfile -> fileSize, sfile -> extension, strlen(sfile -> extension));
+
+        //Calculo Padding
+        int padding_size;
+        if ( mode == LSBE){
+            padding_size = LSBE;
+        }else{
+            padding_size = mode * RGB;  
+        } 
+
+        printf("Padding size = %d\n\n", padding_size);
+
+        //Abro la imagen
+        BmpImage image = create_bmp_image(args_info->p_arg);
+        //Cargo la imagen
+        if(load_bmp_image(image) != LOADING_OK){
+            fprintf(stderr, "Error: No se ha podido cargar la imagen portadora. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
+            exit(EXIT_FAILURE);
+        }
+
+
+        //Calculo capacidad de la imagen
+        int image_capacity = image->width * image->height * mode;
+
+        //Hace que el size sea múltiplo de LSB correspondiente y agrega padding
+        int bit_array_size;
+        int message_size = (inl*CHAR_BITS) + (padding_size-(inl*CHAR_BITS)%padding_size);
+        
+
+        int file_size;
+        file_size = message_size;
+        char * extension = sfile -> extension;
+        char * bit_array = calloc(1,32+padding_size+inl*CHAR_BITS);
+
+        //Imprimo informacion sobre la imagen
+        print_bmp_image(image);
+
+        ptr = in;
+
 
     	//ARMO EL VECTOR CON LOS BITS
     	//PRIMERO ME QUEDO CON EL TAMANIO
@@ -220,7 +249,7 @@ int main(int argc, char **argv){
 		//MODO DESCIFRAR: 
 
 		//Abro la imagen
-		// BmpImage image = create_bmp_image(imagen_levantar);
+		BmpImage image = create_bmp_image(imagen_levantar);
 		//Cargo la imagen
 		load_bmp_image(image);
  		

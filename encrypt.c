@@ -167,3 +167,71 @@ encrypt_LSB1(BmpImage image, char * bit_array, int bit_array_size){
     }
 
 }
+
+StegoFileT *
+readStegoFile(const char * sfilename)
+{
+    StegoFileT * sfiledata;
+    FILE * stegoFile;
+    char * extension;
+    int fsize;
+
+    if ( (stegoFile = fopen(sfilename, "r")) == NULL)
+    {
+        return NULL;
+    }
+
+    if ( (sfiledata = calloc(1, sizeof(StegoFileT))) == NULL)
+    {
+        fclose(stegoFile);
+        return NULL;
+    }
+
+
+    // Reads file size
+    fseek(stegoFile, 0L, SEEK_END);
+    fsize = ftell(stegoFile);
+    fseek(stegoFile, 0L, SEEK_SET);
+
+    if ( (sfiledata -> fileContents = calloc(1, fsize)) == NULL)
+    {
+        fprintf(stderr,"Out of memory when reading %s\n", sfilename);
+        fclose(stegoFile);
+        free(sfiledata);
+        return NULL;
+    }
+
+    // assign filesize, reads in data from file and sets file extension
+    sfiledata -> fileSize = fsize;
+    fread(sfiledata -> fileContents, fsize,1,stegoFile);
+
+    // checks for file read error
+    if (ferror(stegoFile) > 0)
+    {
+        free(sfiledata);
+        fclose(stegoFile);
+        return NULL;
+    }
+
+    extension = strstr(sfilename, ".");
+
+    if ((sfiledata -> extension = calloc(1, sizeof(char) * strlen(extension) + 1)) == NULL)
+    {
+        free(sfiledata);
+        fclose(stegoFile);
+        return NULL;
+    }
+
+    strncpy(sfiledata -> extension, extension, strlen(extension));
+
+    fclose(stegoFile);
+    return sfiledata;
+}
+
+void freeStegoFile(StegoFileT * sfile)
+{
+    free(sfile -> extension);
+    free(sfile -> fileContents);
+    free(sfile);
+    return;
+}
