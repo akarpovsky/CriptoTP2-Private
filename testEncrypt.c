@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+ //Compilarlo con : gcc testEncrypt.c encrypt.c decrypt.c -lm -lcrypto
 int 
 main(void){
 	unsigned char * message;
