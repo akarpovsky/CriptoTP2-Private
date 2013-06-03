@@ -2,11 +2,11 @@
 #include <string.h>
 #include <openssl/aes.h>
 #include <openssl/des.h>
-#include "./includes/defines.h"
-#include "./includes/encrypt.h"
+#include "includes/defines.h"
+#include "includes/encrypt.h"
 
 unsigned char*
-encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int lenght, char * iv){
+encryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght,unsigned char * iv){
 
     
     int primitive=0;
@@ -17,23 +17,23 @@ encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int 
     
     if(primitive==DES){
         if(chaining==ECB)
-            return mydes_ecb_encrypt(data, lenght, password);
+            return (unsigned char*)mydes_ecb_encrypt(data, lenght, password);
         else if(chaining== CBC)
-            return mydes_cbc_encrypt(data, lenght, password, iv);
+            return (unsigned char*)mydes_cbc_encrypt(data, lenght, password, iv);
         else if(chaining== OFB)
-            return mydes_ofb_encrypt(data, lenght, password, iv);
+            return (unsigned char*)mydes_ofb_encrypt(data, lenght, password, iv);
         else
-            return mydes_cfb_encrypt(data, lenght, password, iv);
+            return (unsigned char*)mydes_cfb_encrypt(data, lenght, password, iv);
     }else if(primitive==AES){
 
         if(chaining==ECB)
-            return myaes_ecb_encrypt(data,lenght,password,bits);
+            return (unsigned char*)myaes_ecb_encrypt(data,lenght,password,bits);
         else if(chaining==CBC)
-            return myaes_cbc_encrypt(data,lenght,password,iv,bits);
+            return (unsigned char*) myaes_cbc_encrypt(data,lenght,password,iv,bits);
         else if(chaining==OFB)
-            return myaes_ofb_encrypt(data,lenght,password,iv,bits);
+            return (unsigned char*)myaes_ofb_encrypt(data,lenght,password,iv,bits);
         else 
-            return myaes_cfb_encrypt(data,lenght,password,iv,bits);
+            return (unsigned char*)myaes_cfb_encrypt(data,lenght,password,iv,bits);
     }
     
             

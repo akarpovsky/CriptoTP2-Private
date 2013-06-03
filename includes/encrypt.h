@@ -18,7 +18,7 @@ void encrypt_LSBE(BmpImage image, char * bit_array, int bit_array_size);
 void encrypt_LSB4(BmpImage image, char * bit_array, int bit_array_size);
 void encrypt_LSB1(BmpImage image, char * bit_array, int bit_array_size);
 
-unsigned char* encryptData(char* algorithm,char * mode,char * password, char* data,unsigned int lenght, char* iv);
+unsigned char* encryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password, unsigned char* data,int lenght, unsigned char* iv);
 void getOptions(char* algorihtm, char* mode, int* primitive, int* chaining, int* bits);
 unsigned char * myaes_ecb_encrypt(unsigned char * text, int length, unsigned char * password, int bits);
 unsigned char * myaes_cbc_encrypt(unsigned char * text, int length, unsigned char * key, unsigned char * iv, int bits);
