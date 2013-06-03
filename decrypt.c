@@ -97,7 +97,7 @@ myaes_cfb_decrypt(unsigned char * enc, int length, unsigned char * key, unsigned
        
         AES_set_encrypt_key(key, bits, &aeskey);
 
-        AES_cfb128_encrypt(enc, outbuf, length, &aeskey, liv, &num, AES_DECRYPT);
+        AES_cfb8_encrypt(enc, outbuf, length, &aeskey, liv, &num, AES_DECRYPT);
 
         return outbuf;
 }
