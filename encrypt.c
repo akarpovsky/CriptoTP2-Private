@@ -139,7 +139,7 @@ myaes_cfb_encrypt(unsigned char * text, int length, unsigned char * key, unsigne
 
         AES_set_encrypt_key(key, bits, &aeskey);
 
-        AES_cfb128_encrypt(text, outbuf, length, &aeskey, liv, &num, AES_ENCRYPT);
+        AES_cfb8_encrypt(text, outbuf, length, &aeskey, liv, &num, AES_ENCRYPT);
 
         return outbuf;
 }
