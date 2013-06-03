@@ -29,6 +29,8 @@ struct bmp_image {
 
 typedef struct bmp_image * BmpImage;
 
+#define LOADING_OK 0
+
 BmpImage create_bmp_image(char * filename);
 int load_bmp_image(BmpImage im);
 int save_bmp_image(BmpImage im, char * filename);

@@ -25,3 +25,5 @@ stegobmp:	$(OBJ)
 
 clean: 
 	rm -f $(ODIR)/*.o *~ core $(INCDIR) /*~
+	rm -fr $(ODIR)
+	mkdir obj
