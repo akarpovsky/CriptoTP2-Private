@@ -6,27 +6,18 @@
  //Compilarlo con : gcc testEncrypt.c encrypt.c decrypt.c -lm -lcrypto
 int 
 main(void){
-	unsigned char * message;
+	unsigned char * message= "mensajede16bitss";
         unsigned char * enc;
         unsigned char * out;
-        unsigned char * iv;
-        unsigned char * password;
+        unsigned char * iv="holacomo";
+        unsigned char * password="dinudinu";
        
-        password = calloc(9,1);
-        memcpy((char *)password, "dinudinu",8);
-       
-        iv = calloc(9,1);
-        memcpy((char *)iv, "holacomo",8);
-       
-        message = calloc(100,1);
-        strcpy((char *)message, "mensajede16bitss");
-       
+ 
         int length = strlen((char *)message);
 	printf("El Mensaje a encryptar es :%s\n",message);
 	printf("PRUEBA DE DES OFB\n");        
         enc = mydes_ofb_encrypt( message, length, password, iv);
         out = mydes_ofb_decrypt( enc, length, password, iv);
-	printf("%s\n",message);
         printf("%s\n",enc);
         printf("%s\n",out);
 	
