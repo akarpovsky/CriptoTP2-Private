@@ -268,10 +268,10 @@ mydes_ofb_encrypt(unsigned char * text, int length, unsigned char * key, unsigne
         return enc;
 }
 
-StegoFileT *
-readStegoFile(const char * sfilename)
+PortadorFileT *
+readPortadorData(const char * sfilename)
 {
-    StegoFileT * sfiledata;
+    PortadorFileT * sfiledata;
     FILE * stegoFile;
     char * extension;
     int fsize;
@@ -281,14 +281,14 @@ readStegoFile(const char * sfilename)
         return NULL;
     }
 
-    if ( (sfiledata = calloc(1, sizeof(StegoFileT))) == NULL)
+    if ( (sfiledata = calloc(1, sizeof(PortadorFileT))) == NULL)
     {
         fclose(stegoFile);
         return NULL;
     }
 
 
-    // Reads file size
+    // Tamaño del archivo
     fseek(stegoFile, 0L, SEEK_END);
     fsize = ftell(stegoFile);
     fseek(stegoFile, 0L, SEEK_SET);
@@ -301,11 +301,9 @@ readStegoFile(const char * sfilename)
         return NULL;
     }
 
-    // assign filesize, reads in data from file and sets file extension
     sfiledata -> fileSize = fsize;
     fread(sfiledata -> fileContents, fsize,1,stegoFile);
 
-    // checks for file read error
     if (ferror(stegoFile) > 0)
     {
         free(sfiledata);
@@ -328,7 +326,7 @@ readStegoFile(const char * sfilename)
     return sfiledata;
 }
 
-void freeStegoFile(StegoFileT * sfile)
+void freePortadorFile(PortadorFileT * sfile)
 {
     free(sfile -> extension);
     free(sfile -> fileContents);

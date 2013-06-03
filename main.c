@@ -25,8 +25,7 @@ int main(int argc, char **argv){
      char * accion;
     //Mensaje a Cifrar
     char * ptr;
-    char * imagen_levantar = args_info->out_arg;
-    
+
     char * password =args_info->pass_arg;
 
     /*
@@ -63,13 +62,13 @@ int main(int argc, char **argv){
 
 	if ( type == ENCRIPT){
 
-        StegoFileT * sfile;
+        PortadorFileT * sfile;
         unsigned char * in, * out;
         int outl, inl, padsize;
 
         // Reads in the file to be hidden
 
-        if ( (sfile = readStegoFile(args_info->in_arg)) == NULL)
+        if ( (sfile = readPortadorData(args_info->in_arg)) == NULL)
         {
             fprintf(stderr, "Error al leer el archivo archivo a encriptar: \"%s\".\n\n", args_info->in_arg);
             exit(EXIT_FAILURE);
@@ -84,7 +83,7 @@ int main(int argc, char **argv){
         if ( (in = calloc(1, inl)) == NULL )
         {
             fprintf(stderr, "Memoria insuficiente para esteganografiado del archivo \"%s\"\n", args_info->in_arg);
-            freeStegoFile(sfile);
+            freePortadorFile(sfile);
         }
 
         int endianSize = ntohl(sfile -> fileSize);
@@ -105,6 +104,7 @@ int main(int argc, char **argv){
 
         //Abro la imagen
         BmpImage image = create_bmp_image(args_info->p_arg);
+
         //Cargo la imagen
         if(load_bmp_image(image) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido cargar la imagen portadora. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
@@ -117,13 +117,16 @@ int main(int argc, char **argv){
 
         //Hace que el size sea múltiplo de LSB correspondiente y agrega padding
         int bit_array_size;
-        int message_size = (inl*CHAR_BITS) + (padding_size-(inl*CHAR_BITS)%padding_size);
-        
+        // int message_size = (inl*CHAR_BITS) + (padding_size-(inl*CHAR_BITS)%padding_size);
+        int message_size = (sfile -> fileSize*CHAR_BITS) + (padding_size-(sfile -> fileSize*CHAR_BITS)%padding_size);
+
 
         int file_size;
         file_size = message_size;
         char * extension = sfile -> extension;
-        char * bit_array = calloc(1,32+padding_size+inl*CHAR_BITS);
+        // char * bit_array = calloc(1,32+padding_size+inl*CHAR_BITS);
+        char * bit_array = calloc(1,sizeof(DWORD)*CHAR_BITS+padding_size+sfile -> fileSize*CHAR_BITS+strlen(extension)*CHAR_BITS);
+
 
         //Imprimo informacion sobre la imagen
         print_bmp_image(image);
@@ -253,16 +256,22 @@ int main(int argc, char **argv){
 		//MODO DESCIFRAR: 
 
 		//Abro la imagen
-		BmpImage image = create_bmp_image(imagen_levantar);
-		//Cargo la imagen
-		load_bmp_image(image);
- 		
+		BmpImage image2 = create_bmp_image(args_info->p_arg);
+
+        // Cargo la imagen
+        if(load_bmp_image(image2) != LOADING_OK){
+            fprintf(stderr, "Error: No se ha podido cargar la imagen con contenido oculto. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
+            exit(EXIT_FAILURE);
+        }
+
+        char * out_filename = args_info->out_arg;
+
  		if ( mode == LSB1 ){
-    		decrypt_LSB1(image);
+    		decrypt_LSB1(image2, out_filename);
     	}else if ( mode == LSB4 ){
-    		decrypt_LSB4(image);
+    		decrypt_LSB4(image2, out_filename);
     	}else{
-			decrypt_LSBE(image);
+			decrypt_LSBE(image2, out_filename);
 		}
 
 

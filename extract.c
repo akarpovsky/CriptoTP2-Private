@@ -2,7 +2,7 @@
 #include "includes/extract.h"
 #include <math.h>
 
-int decrypt_LSBE(BmpImage image){
+int decrypt_LSBE(BmpImage image, char * out_filename){
 
     //Recupero el mensaje;
     int i,j,k,h, bit_array_size;
@@ -112,7 +112,7 @@ int decrypt_LSBE(BmpImage image){
     }
 
     //Parseo la extension
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
+    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el bucle anterior
     h=0;
     j--;
 
@@ -159,11 +159,11 @@ int decrypt_LSBE(BmpImage image){
     
 
 
-    printf("texto:%s\n", respuesta);
-    printf("ext:%s\n", ans_extension);
+    printf("\n\n\tTexto oculto: %s\n", respuesta);
+    printf("\tExtension: %s\n", ans_extension);
 
     char example[100];
-    strcpy (example,"respuesta");
+    strcpy (example,out_filename);
     strcat (example,ans_extension);
     FILE * salida = fopen(example, "wb");
     FCHK(fwrite(respuesta, bit_array_size, 1, salida)); 
@@ -171,7 +171,7 @@ int decrypt_LSBE(BmpImage image){
 
 }
 
-int decrypt_LSB4(BmpImage image){
+int decrypt_LSB4(BmpImage image, char * out_filename){
 
     //Recupero el mensaje;
     int i,j,k,h, bit_array_size;
@@ -307,19 +307,21 @@ int decrypt_LSB4(BmpImage image){
     
 
 
-    printf("texto:%s\n", respuesta);
-    printf("ext:%s\n", ans_extension);
+    printf("\n\n\tTexto oculto: %s\n", respuesta);
+    printf("\tExtension: %s\n", ans_extension);
 
     char example[100];
-    strcpy (example,"respuesta");
+    strcpy (example,out_filename);
     strcat (example,ans_extension);
     FILE * salida = fopen(example, "wb");
     FCHK(fwrite(respuesta, bit_array_size, 1, salida)); 
 
+    
+
 }
 
 int
-decrypt_LSB1(BmpImage image){
+decrypt_LSB1(BmpImage image, char * out_filename){
 
     //Recupero el mensaje;
     int i,j,k,h, bit_array_size;
@@ -416,11 +418,11 @@ decrypt_LSB1(BmpImage image){
     
 
 
-    printf("texto:%s\n", respuesta);
-    printf("ext:%s\n", ans_extension);
+    printf("\n\n\tTexto oculto: %s\n", respuesta);
+    printf("\tExtension: %s\n", ans_extension);
 
     char example[100];
-    strcpy (example,"respuesta");
+    strcpy (example,out_filename);
     strcat (example,ans_extension);
     FILE * salida = fopen(example, "wb");
     FCHK(fwrite(respuesta, bit_array_size, 1, salida)); 
