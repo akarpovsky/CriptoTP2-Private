@@ -10,6 +10,8 @@
 #include "includes/extract.h"
 #include "includes/main.h"
 #include "includes/cmdline.h"
+#include "includes/decrypt.h"
+#include "includes/encrypt.h"
 
 int main(int argc, char **argv){
 	

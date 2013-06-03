@@ -8,42 +8,12 @@
 unsigned char*
 encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int lenght){
 
-	unsigned char* encryptedData = NULL;
+	
 	int primitive=0;
 	int chaining=-1;
 	int bits=0;
-	if(algorithm !=NULL){
-
-		if( strcmp(algorithm,"aes128")==0){
-			primitive= AES;
-			bits=128;
-		}else if ( strcmp(algorithm,"aes192")==0){
-			primitive= AES;
-			bits=192;
-		}else if ( strcmp(algorithm,"aes256")==0){
-			primitive= AES;
-			bits=256;
-		}else if ( strcmp(algorithm,"des")==0){
-			primitive= DES;
-		}
-	}else{
-		primitive= AES;	
-		bits=128;
-	}
-
-	if(mode !=NULL){
-			if( strcmp(mode,"ecb")==0){
-				chaining=ECB;
-			}else if(strcmp(mode,"cfb")==0){
-				chaining=CBF;
-			}else if(strcmp(mode,"ofb")==0){
-				chaining=OFB;
-			}else if(strcmp(mode,"cbc")==0){
-				chaining=CBC;
-			}
-	}else{
-		chaining=CBC;
-		}	
+	
+	getOptions(algorithm, mode,&primitive,&chaining,&bits);
 	
 	if(primitive==DES){
 		if(chaining==ECB)
@@ -70,6 +40,41 @@ encryptData(char* algorithm,char * mode,char * password,char* data,unsigned int 
 
 }
 
+void
+getOptions(char* algorithm, char* mode, int* primitive, int* chaining, int* bits){
+if(algorithm !=NULL){
+
+		if( strcmp(algorithm,"aes128")==0){
+			*primitive= AES;
+			*bits=128;
+		}else if ( strcmp(algorithm,"aes192")==0){
+			*primitive= AES;
+			*bits=192;
+		}else if ( strcmp(algorithm,"aes256")==0){
+			*primitive= AES;
+			*bits=256;
+		}else if ( strcmp(algorithm,"des")==0){
+			*primitive= DES;
+		}
+	}else{
+		*primitive= AES;	
+		*bits=128;
+	}
+
+	if(mode !=NULL){
+			if( strcmp(mode,"ecb")==0){
+				*chaining=ECB;
+			}else if(strcmp(mode,"cfb")==0){
+				*chaining=CBF;
+			}else if(strcmp(mode,"ofb")==0){
+				*chaining=OFB;
+			}else if(strcmp(mode,"cbc")==0){
+				*chaining=CBC;
+			}
+	}else{
+		*chaining=CBC;
+		}	
+}
 
 
 unsigned char *

@@ -2,6 +2,7 @@
 #define _ENCRYPT_H_
 
 unsigned char* encryptData(char* algorithm,char * mode,char * password, char* data,unsigned int lenght);
+void getOptions(char* algorihtm, char* mode, int* primitive, int* chaining, int* bits);
 unsigned char * myaes_ecb_encrypt(unsigned char * text, int length, unsigned char * password, int bits);
 unsigned char * myaes_cbc_encrypt(unsigned char * text, int length, unsigned char * key, unsigned char * iv, int bits);
 unsigned char * myaes_cfb_encrypt(unsigned char * text, int length, unsigned char * key, unsigned char * iv, int bits);
