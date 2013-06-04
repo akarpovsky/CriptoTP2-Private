@@ -14,7 +14,7 @@
 #include "includes/decrypt.h"
 
 int main(int argc, char **argv){
-	
+    
     struct gengetopt_args_info *args_info = malloc(sizeof(struct gengetopt_args_info));
 
     int type; // Encrypt | Decrypt (Embed | Extract)
@@ -29,31 +29,31 @@ int main(int argc, char **argv){
     char * password = args_info->pass_arg; // Password ingresada por el usuario
     /* Fin encriptación */ 
 
-	// Levanto argumentos de la linea de comandos
-	if(cmdline_parser(argc, argv, args_info) != 0) {
-		return EXIT_FAILURE;
-	}
+    // Levanto argumentos de la linea de comandos
+    if(cmdline_parser(argc, argv, args_info) != 0) {
+        return EXIT_FAILURE;
+    }
 
-	if(args_info->ENCRYPT_mode_counter){
-		printf("\n\nModo: Encrypt (EMBED)\n\n");
-		type = ENCRIPT;
-	}else if(args_info->DECRYPT_mode_counter){
-		printf("\n\nModo: Decrypt (EXTRACT)\n\n");
-		type = DECRIPT;
-	}else{
+    if(args_info->ENCRYPT_mode_counter){
+        printf("\n\nModo: Encrypt (EMBED)\n\n");
+        type = ENCRIPT;
+    }else if(args_info->DECRYPT_mode_counter){
+        printf("\n\nModo: Decrypt (EXTRACT)\n\n");
+        type = DECRIPT;
+    }else{
         fprintf(stderr, "Error: Modo de operación no reconocido. Pruebe ejecutar el programa con --help para obtener ayuda.\n\n");
         exit(EXIT_FAILURE);
-	}
+    }
 
-	printUserArguments(args_info);
+    printUserArguments(args_info);
 
-	//Completo el modo (steg_orig guarda el algoritmo de esteganografiado)
-	getStenographyMode(args_info->steg_arg,&mode);
+    //Completo el modo (steg_orig guarda el algoritmo de esteganografiado)
+    getStenographyMode(args_info->steg_arg,&mode);
 
-	
-	int i,j,h,k;
+    
+    int i,j,h,k;
 
-	if ( type == ENCRIPT){
+    if ( type == ENCRIPT){
 
         PortadorFileT * sfile;
         unsigned char * in, * out;
@@ -65,11 +65,11 @@ int main(int argc, char **argv){
             exit(EXIT_FAILURE);
         }
 
-        //  file size indicator + file contents + file extension length + \0
+        //  calculo espacio necesario para: size + file contents + file extension length + \0
         inl = sizeof(DWORD) + sfile -> fileSize + strlen(sfile -> extension) + 1;
         printf("Espacio necesario para esteganografiar el archivo \"%s\" = %d.\n\n",args_info->in_arg, inl);
 
-        // allocs space to hold fsize indicator, file contents, fextension and \0
+        // aloco espacio para fsize. file contents, fextension y \0
 
         if ( (in = calloc(1, inl)) == NULL )
         {
@@ -79,9 +79,12 @@ int main(int argc, char **argv){
 
         int endianSize = ntohl(sfile -> fileSize);
 
-        // Copio el filesize y el contenido del mismo
+        /* Nico: Si descomentas la tercer línea vas a tener en "in" todo lo que necesitamos: size, contenido, extension
+            y lugar para el \0  */
         memcpy(in, &endianSize, 4);
         memcpy(in + sizeof(DWORD), sfile -> fileContents, sfile -> fileSize);
+        // memcpy(in + sizeof(DWORD) + sfile -> fileSize, sfile -> extension, strlen(sfile -> extension));
+
 
         //Calculo Padding
         int padding_size;
@@ -126,56 +129,56 @@ int main(int argc, char **argv){
         ptr = in + sizeof(int);
 
 
-    	//ARMO EL VECTOR CON LOS BITS
-    	//PRIMERO ME QUEDO CON EL TAMANIO
-    	h =0;
+        //ARMO EL VECTOR CON LOS BITS
+        //PRIMERO ME QUEDO CON EL TAMANIO
+        h =0;
         printf("Padding: %d\n", padding_size);
         printf("File size: %d => ", file_size);
-       	for(i = 31; i >= 0; --i){
+        for(i = 31; i >= 0; --i){
                 if (file_size & 1 << i){
-                	bit_array[h] = '1';
+                    bit_array[h] = '1';
                 }else{
-                	bit_array[h] = '0';
+                    bit_array[h] = '0';
                 }
                 printf("%c",bit_array[h]);
-            	h++;
-    	}
+                h++;
+        }
         putchar('\n');
 
         if( mode == LSB1){
-        	//1 BIT DE CORRECION PARA QUE SEA MULTIPLO DE 3
-        	bit_array[h++] = '0';
+            //1 BIT DE CORRECION PARA QUE SEA MULTIPLO DE 3
+            bit_array[h++] = '0';
         }else if ( mode == LSB4){
-        	//4 BIT DE CORRECION PARA QUE SEA MULTIPLO DE 12
-        	bit_array[h++] = '0';
-        	bit_array[h++] = '0';
-        	bit_array[h++] = '0';
-        	bit_array[h++] = '0';
+            //4 BIT DE CORRECION PARA QUE SEA MULTIPLO DE 12
+            bit_array[h++] = '0';
+            bit_array[h++] = '0';
+            bit_array[h++] = '0';
+            bit_array[h++] = '0';
         }
         
         int size_length = h;
 
         printf("Message bits: \n");
         //LUEGO PONGO LOS BITS DEL MENSAJE
-    	for(; *ptr != 0; ++ptr)
+        for(; *ptr != 0; ++ptr)
         {
             printf("%c => ", *ptr);
             /* perform bitwise AND for every bit of the character */
             for(i = 7; i >= 0; --i){
                 if (*ptr & 1 << i){
-                	bit_array[h] = '1';
+                    bit_array[h] = '1';
                 }else{
-                	bit_array[h] = '0';
+                    bit_array[h] = '0';
                 }
                 printf("%c",bit_array[h]);
-            	h++;
-    		}
+                h++;
+            }
             putchar('\n');
         }
 
-    	//Completo el Padding con 0 para que no afecte el ocultamiento.
+        //Completo el Padding con 0 para que no afecte el ocultamiento.
         for (; h<(message_size+size_length);h++){
-        	bit_array[h] = '0';
+            bit_array[h] = '0';
         }
 
         printf("Extension bits: \n");
@@ -186,36 +189,36 @@ int main(int argc, char **argv){
             /* perform bitwise AND for every bit of the character */
             for(i = 7; i >= 0; --i){
                 if (*extension & 1 << i){
-                	bit_array[h] = '1';
+                    bit_array[h] = '1';
                 }else{
-                	bit_array[h] = '0';
+                    bit_array[h] = '0';
                 }
                 printf("%c",bit_array[h]);
-            	h++;
-    		}
+                h++;
+            }
             putchar('\n');
         }
 
 
             //Completo el Padding con 0 para que no afecte el ocultamiento.
             if( mode != LSBE){
-            	for ( i = h; (h%padding_size) != 0;h++){
-            		bit_array[h] = '0';
-            	}
-        	}
+                for ( i = h; (h%padding_size) != 0;h++){
+                    bit_array[h] = '0';
+                }
+            }
 
             //Actualizo el tamanio total
             bit_array_size = h;
             for( k = 0; k<bit_array_size;k++)
-            	printf("%c", bit_array[k]);
+                printf("%c", bit_array[k]);
             putchar(10);
-        	
-        	char* encryptedData=NULL;
-        	if(password != NULL){
-        		//encryptedData=encryptData(primitiva,modo,bit_array);
-        	}
+            
+            char* encryptedData=NULL;
+            if(password != NULL){
+                //encryptedData=encryptData(primitiva,modo,bit_array);
+            }
 
-        	
+            
             printf("bit_array_size = %d bits.\n", bit_array_size);
             //Chequeo que se pueda almacenar la informacion en la imagen.
             //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE
@@ -224,28 +227,28 @@ int main(int argc, char **argv){
                 exit(EXIT_FAILURE);
             }
 
-       		
-       		//Llamo a la funcion correspondiente dependiendo del modo
-        	if ( mode == LSB1 ){
-        		encrypt_LSB1(image, bit_array, bit_array_size);
-        	}else if ( mode == LSB4 ){
-        		encrypt_LSB4(image, bit_array, bit_array_size);
-        	}else{
-    			encrypt_LSBE(image, bit_array, bit_array_size);
-    		}
-        	//Salvo la nueva imagen
-    		if(save_bmp_image(image, args_info->out_arg) == FALSE){
+            
+            //Llamo a la funcion correspondiente dependiendo del modo
+            if ( mode == LSB1 ){
+                encrypt_LSB1(image, bit_array, bit_array_size);
+            }else if ( mode == LSB4 ){
+                encrypt_LSB4(image, bit_array, bit_array_size);
+            }else{
+                encrypt_LSBE(image, bit_array, bit_array_size);
+            }
+            //Salvo la nueva imagen
+            if(save_bmp_image(image, args_info->out_arg) == FALSE){
                 fprintf(stderr, "Error: No se ha podido crear el archivo de salida \"%s\".\n\n", args_info->out_arg);
                 exit(EXIT_FAILURE);
             }else{
                 printf("Creado el archivo de salida: \"%s\".\n\n", args_info->out_arg);
             }
 
-	}else{
-		/* MODO EXTRACT */
+    }else{
+        /* MODO EXTRACT */
 
-		//Abro la imagen
-		BmpImage image2 = create_bmp_image(args_info->p_arg);
+        //Abro la imagen
+        BmpImage image2 = create_bmp_image(args_info->p_arg);
 
         // Cargo la imagen
         if(load_bmp_image(image2) != LOADING_OK){
@@ -255,69 +258,30 @@ int main(int argc, char **argv){
 
         char * out_filename = args_info->out_arg;
 
- 		if ( mode == LSB1 ){
-    		decrypt_LSB1(image2, out_filename);
-    	}else if ( mode == LSB4 ){
-    		decrypt_LSB4(image2, out_filename);
-    	}else{
-			decrypt_LSBE(image2, out_filename);
-		}
+        if ( mode == LSB1 ){
+            decrypt_LSB1(image2, out_filename);
+        }else if ( mode == LSB4 ){
+            decrypt_LSB4(image2, out_filename);
+        }else{
+            decrypt_LSBE(image2, out_filename);
+        }
 
 
-	}
+    }
 
-	printf("Fin del Programa\n");
+    printf("Fin del Programa\n");
 }
 
 
 void
 getStenographyMode(char* estenografia, int* mode){
 if ( strcmp(estenografia,"LSB1") == 0){
-		*mode = LSB1;
-	}else if (strcmp(estenografia,"LSB4") == 0){
-		*mode = LSB4;
-	}else if(strcmp(estenografia,"LSBE") == 0){
-		*mode = LSBE;
-	}
-}
-
-void 
-printUserArguments(struct gengetopt_args_info *args_info){
-	printf("*******************************************************\n");
-	printf("Parámetros obligatorios:\n");
-	if(args_info->ENCRYPT_mode_counter){
-		printf("Modo: Encrypt (EMBED)\n\n");
-		printf("\tAlgoritmo de esteganografiado: %s\n", args_info->steg_arg);
-		printf("\tArchivo a ocultar: %s\n", args_info->in_arg);
-	}else if(args_info->DECRYPT_mode_counter){
-		printf("Modo: Decrypt (EXTRACT)\n\n");
-		printf("\tAlgoritmo de esteganografiado: %s\n", args_info->steg_arg);
-
-	}
-		printf("\tArchivo portador: %s\n", args_info->p_arg);
-		printf("\tArchivo de salida: %s\n", args_info->out_arg);
-	
-	printf("\nParámetros opcionales:\n");
-	
-	if(args_info->a_orig == NULL){
-		printf("\tAlgoritmo de encripción: %s [USING DEFAULT]\n", args_info->a_arg);
-	}else{
-		printf("\tAlgoritmo de encripción: %s\n", args_info->a_arg);
-	}
-
-	if(args_info->m_orig == NULL){
-		printf("\tModo de encadenamiento: %s [USING DEFAULT]\n", args_info->m_arg);
-	}else{
-		printf("\tModo de encadenamiento: %s\n", args_info->m_arg);
-	}
-
-	if(args_info->pass_orig == NULL){
-		printf("\tPassword no especificada\n");
-	}else{
-		printf("\tPassword: %s\n", args_info->pass_arg);
-	}
-
-	printf("\n*******************************************************\n\n");
+        *mode = LSB1;
+    }else if (strcmp(estenografia,"LSB4") == 0){
+        *mode = LSB4;
+    }else if(strcmp(estenografia,"LSBE") == 0){
+        *mode = LSBE;
+    }
 }
 
 unsigned char *

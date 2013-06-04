@@ -7,6 +7,9 @@
 #include <string.h>
 #include <math.h>
 
+#include "cmdline.h"
+#define LOADING_OK 0
+
 typedef struct
 {   
     unsigned char blue;
@@ -28,8 +31,8 @@ struct bmp_image {
 };
 
 typedef struct bmp_image * BmpImage;
+void printUserArguments(struct gengetopt_args_info *args_info);
 
-#define LOADING_OK 0
 
 BmpImage create_bmp_image(char * filename);
 int load_bmp_image(BmpImage im);

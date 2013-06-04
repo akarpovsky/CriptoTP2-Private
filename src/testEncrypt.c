@@ -5,7 +5,7 @@
 #include <string.h>
  //Compilarlo con : gcc testEncrypt.c encrypt.c decrypt.c -lm -lcrypto
 int 
-main(void){
+main2(void){
 	unsigned char * message= "mensajede16bitss";
         unsigned char * enc;
         unsigned char * out;

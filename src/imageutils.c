@@ -77,8 +77,13 @@ load_bmp_image(BmpImage im)
 int
 save_bmp_image(BmpImage im, char * filename) 
 {
+    char filepath[100];
+    char *target = "./target/";
+    strcpy (filepath, target);
+    strcat (filepath, filename);
+
     FILE *fp;
-    fp = fopen(filename, "wb");
+    fp = fopen(filepath, "wb");
     int i,j;
     if(fp != NULL) {
         fseek(fp, 0x00, SEEK_SET);
@@ -142,4 +147,43 @@ print_bmp_bitmap(BmpImage im){
             printf( "Pixel %d: %3d %3d %3d\n", i+1, im->bitmap[(j*im->width) + i].red, im->bitmap[(j*im->width) + i].green, im->bitmap[(j*im->width) + i].blue );
         }
     }
+}
+
+void 
+printUserArguments(struct gengetopt_args_info *args_info){
+    printf("*******************************************************\n");
+    printf("Parámetros obligatorios:\n");
+    if(args_info->ENCRYPT_mode_counter){
+        printf("Modo: Encrypt (EMBED)\n\n");
+        printf("\tAlgoritmo de esteganografiado: %s\n", args_info->steg_arg);
+        printf("\tArchivo a ocultar: %s\n", args_info->in_arg);
+    }else if(args_info->DECRYPT_mode_counter){
+        printf("Modo: Decrypt (EXTRACT)\n\n");
+        printf("\tAlgoritmo de esteganografiado: %s\n", args_info->steg_arg);
+
+    }
+        printf("\tArchivo portador: %s\n", args_info->p_arg);
+        printf("\tArchivo de salida: %s\n", args_info->out_arg);
+    
+    printf("\nParámetros opcionales:\n");
+    
+    if(args_info->a_orig == NULL){
+        printf("\tAlgoritmo de encripción: %s [USING DEFAULT]\n", args_info->a_arg);
+    }else{
+        printf("\tAlgoritmo de encripción: %s\n", args_info->a_arg);
+    }
+
+    if(args_info->m_orig == NULL){
+        printf("\tModo de encadenamiento: %s [USING DEFAULT]\n", args_info->m_arg);
+    }else{
+        printf("\tModo de encadenamiento: %s\n", args_info->m_arg);
+    }
+
+    if(args_info->pass_orig == NULL){
+        printf("\tPassword no especificada\n");
+    }else{
+        printf("\tPassword: %s\n", args_info->pass_arg);
+    }
+
+    printf("\n*******************************************************\n\n");
 }

@@ -1,30 +1,53 @@
-IDIR=includes
-CC=gcc
-CFLAGS=-I$(IDIR)
+# ------------------------------------------------
+# Generic Makefile
+#
+# Author: yanick.rochon@gmail.com
+# Date  : 2011-08-10
+#
+# Changelog :
+#   2010-11-05 - first version
+#   2011-08-10 - added structure : sources, objects, binaries
+#                thanks to http://stackoverflow.com/users/128940/beta
+# ------------------------------------------------
 
-ODIR=obj
-LDIR=lib
+# project name (generate executable with this name)
+TARGET   = stegobmp
 
-LIBS=-lm -lcrypto
+CC       = gcc
 
-_DEPS= cmdline.h embed.h extract.h imageutils.h defines.h encrypt.h decrypt.h
-DEPS=$(patsubst %, $(IDIR)/%,$(_DEPS))
+LINKER   = gcc -o
+# linking flags here
+LFLAGS   = -lm -lcrypto
 
-_OBJ= main.o cmdline.o embed.o extract.o imageutils.o encrypt.o decrypt.o 
-OBJ=$(patsubst %, $(ODIR)/%,$(_OBJ))
+# change these to set the proper directories where each files shoould be
+SRCDIR   = src
+OBJDIR   = obj
+BINDIR   = .
 
-$(ODIR)/%.o:	%.c $(DEPS)
-				$(CC) -c -o $@ $< $(CFLAGS)
+SOURCES  := $(wildcard $(SRCDIR)/*.c)
+INCLUDES := $(wildcard $(SRCDIR)/includes/*.h)
+OBJECTS  := $(SOURCES:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
+rm       = rm -f
 
-stegobmp:	$(OBJ)
-			$(CC) -o $@ $^ $(CFLAGS) $(LIBS) 
+# compiling flags here
+CFLAGS=-I./src/includes
 
-%.o:		%.c $(DEPS) $(CC) -c -o $@ $< $(LIBS)
 
-.PHONY: clean
+$(BINDIR)/$(TARGET): $(OBJECTS)
+	@$(LINKER) $@ $(LFLAGS) $(OBJECTS)
+	@echo "Linking complete!"
+	@echo "\n\t----->Creado el ejecutable: $(TARGET)\n"
 
-clean: 
-	rm -f $(ODIR)/*.o *~ core $(INCDIR) /*~
-	rm -fr $(ODIR)
-	mkdir obj
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
 
+.PHONEY: clean
+clean:
+	@$(rm) $(BINDIR)/$(TARGET)
+	@$(rm) $(OBJECTS)
+	mkdir -p obj
+	mkdir -p target
+	@echo "Cleanup complete!"
+
+.PHONEY: remove
