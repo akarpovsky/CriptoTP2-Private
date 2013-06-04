@@ -57,7 +57,7 @@ int decrypt_LSBE(BmpImage image, char * out_filename){
     putchar(10);
     //Armo el array para contener el mensaje
     bit_array_size = total;
-    printf("FINAL TAM:%d AND H:%d\n", total,h);
+    printf("\n\tTamano:%d y H:%d\n", total,h);
     char * aux = calloc (1,bit_array_size); 
     char * respuesta = calloc (1,bit_array_size);
 
@@ -219,7 +219,7 @@ int decrypt_LSB4(BmpImage image, char * out_filename){
 
     //Armo el array para contener el mensaje
     bit_array_size = total;
-    printf("\nFINAL TAM:%d\n", total);
+    printf("\n\tTamano:%d\n", total);
     char * aux = calloc (1,bit_array_size); 
     char * respuesta = calloc (1,bit_array_size);
 

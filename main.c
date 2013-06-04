@@ -17,22 +17,17 @@ int main(int argc, char **argv){
 	
     struct gengetopt_args_info *args_info = malloc(sizeof(struct gengetopt_args_info));
 
-    //Parametros cableados
-    int type;
-    int mode;
-    int primitiva=0;
-    int modo=-1;
-     char * accion;
-    //Mensaje a Cifrar
-    char * ptr;
+    int type; // Encrypt | Decrypt (Embed | Extract)
+    
+    int mode; // LSBE | LSB4 | LSBE
 
-    char * password =args_info->pass_arg;
+    char * ptr; //Mensaje a Cifrar
 
-    /*
-     *
-     *  Empieza Programa
-     *
-     */
+    /* Para encriptación */
+    char * algorithm = args_info->a_arg; // Algoritmo de encriptacion (AES128, DES, etc)
+    char * encrypt_mode = args_info->m_arg; // Modo de encriptacion (CBC, OFB, etc)
+    char * password = args_info->pass_arg; // Password ingresada por el usuario
+    /* Fin encriptación */ 
 
 	// Levanto argumentos de la linea de comandos
 	if(cmdline_parser(argc, argv, args_info) != 0) {
@@ -41,11 +36,9 @@ int main(int argc, char **argv){
 
 	if(args_info->ENCRYPT_mode_counter){
 		printf("\n\nModo: Encrypt (EMBED)\n\n");
-		accion = "ENCRIPT";
 		type = ENCRIPT;
 	}else if(args_info->DECRYPT_mode_counter){
 		printf("\n\nModo: Decrypt (EXTRACT)\n\n");
-		accion = "DECRIPT";
 		type = DECRIPT;
 	}else{
         fprintf(stderr, "Error: Modo de operación no reconocido. Pruebe ejecutar el programa con --help para obtener ayuda.\n\n");
@@ -66,15 +59,13 @@ int main(int argc, char **argv){
         unsigned char * in, * out;
         int outl, inl, padsize;
 
-        // Reads in the file to be hidden
-
         if ( (sfile = readPortadorData(args_info->in_arg)) == NULL)
         {
             fprintf(stderr, "Error al leer el archivo archivo a encriptar: \"%s\".\n\n", args_info->in_arg);
             exit(EXIT_FAILURE);
         }
 
-        // calculate size of file size indicator + file contents + file extension length + \0
+        //  file size indicator + file contents + file extension length + \0
         inl = sizeof(DWORD) + sfile -> fileSize + strlen(sfile -> extension) + 1;
         printf("Espacio necesario para esteganografiar el archivo \"%s\" = %d.\n\n",args_info->in_arg, inl);
 
@@ -138,6 +129,7 @@ int main(int argc, char **argv){
     	//ARMO EL VECTOR CON LOS BITS
     	//PRIMERO ME QUEDO CON EL TAMANIO
     	h =0;
+        printf("Padding: %d\n", padding_size);
         printf("File size: %d => ", file_size);
        	for(i = 31; i >= 0; --i){
                 if (file_size & 1 << i){
@@ -205,14 +197,12 @@ int main(int argc, char **argv){
         }
 
 
-        //Completo el Padding con 0 para que no afecte el ocultamiento.
-        if( mode != LSBE){
-        	for ( i = h; (h%padding_size) != 0;h++){
-        		bit_array[h] = '0';
+            //Completo el Padding con 0 para que no afecte el ocultamiento.
+            if( mode != LSBE){
+            	for ( i = h; (h%padding_size) != 0;h++){
+            		bit_array[h] = '0';
+            	}
         	}
-    	}
-
-	
 
             //Actualizo el tamanio total
             bit_array_size = h;
@@ -234,7 +224,6 @@ int main(int argc, char **argv){
                 exit(EXIT_FAILURE);
             }
 
-
        		
        		//Llamo a la funcion correspondiente dependiendo del modo
         	if ( mode == LSB1 ){
@@ -253,7 +242,7 @@ int main(int argc, char **argv){
             }
 
 	}else{
-		//MODO DESCIFRAR: 
+		/* MODO EXTRACT */
 
 		//Abro la imagen
 		BmpImage image2 = create_bmp_image(args_info->p_arg);
@@ -331,3 +320,16 @@ printUserArguments(struct gengetopt_args_info *args_info){
 	printf("\n*******************************************************\n\n");
 }
 
+unsigned char *
+paddingPKCS5(unsigned char *in, int *inl, size_t blocksize) {
+    int pad;
+    int i;
+    unsigned char *inPad;
+    pad = blocksize - (*inl) % blocksize;
+    inPad = malloc(*inl + pad);
+    memcpy(inPad, in, *inl);
+    for (i = (*inl); i < (*inl + pad); i++)
+        inPad[i] = pad;
+    *inl +=pad;
+    return (inPad);
+}
