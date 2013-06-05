@@ -326,15 +326,12 @@ decrypt_LSB1(BmpImage image, char * out_filename){
     //Recupero el mensaje;
     int i,j,k,h, bit_array_size;
     h = 0;
-    char * aux2 = calloc (1,32);
-    char * aux3 = calloc (1,64);
-    char * ans_extension = calloc(1,64);
-    int * tamanio = calloc(1,sizeof(int));
-    
+    char * aux2 = calloc (1,image->image_size*3);
+    char * tamanio = calloc(1,32);
 
     //Leo los primeros 32 para obtener el size;
-     for( j=0; j<image->height && h<32; j++ ) {
-        for( i=0; i<image->width && h<32; i++) {
+     for( j=0; j<image->height; j++ ) {
+        for( i=0; i<image->width; i++) {
             aux2[h++] = image->bitmap[(j*image->width) + i].red & 1;
             aux2[h++] = image->bitmap[(j*image->width) + i].green & 1;
             aux2[h++] = image->bitmap[(j*image->width) + i].blue & 1;
@@ -343,10 +340,11 @@ decrypt_LSB1(BmpImage image, char * out_filename){
             i=0;
     }
 
+    memcpy(tamanio,aux2,32);
     //Transformo los bits a un numero int concreto
     int total=0;
     for ( k = 0; k < 32; k++){
-        if ( (aux2[k]%2) == 1){
+        if ( (tamanio[k]%2) == 1){
             total += pow(2,(31-k));
         }
     }
@@ -354,32 +352,22 @@ decrypt_LSB1(BmpImage image, char * out_filename){
     //Armo el array para contener el mensaje
     bit_array_size = total;
     printf("FINAL TAM:%d", total);
-    char * aux = calloc (1,bit_array_size); 
+    char * extension = calloc (1,5); 
     char * respuesta = calloc (1,bit_array_size);
+    char * mensaje = calloc (1,bit_array_size);
+    char * ans_extension = calloc(1,64);
+     
+    memcpy(mensaje,(aux2+32),bit_array_size*8);
+    memcpy(extension,(aux2+32+bit_array_size*8),5*8);
 
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
+   /*for ( k = 0; k < bit_array_size*8; k++){
+        printf("%d",mensaje[k]);
+    }*/
 
-    //Leo el mensaje en base al tamanio obtenido anteriormente
-     for(; j<image->height && h<bit_array_size; j++ ) {
-        for(; i<image->width && h<bit_array_size; i++) {
-            //printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
-            aux[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            aux[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            aux[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    printf("H: %d\n",h);
-    for ( k = 0; k < h; k++){
-        printf("%d",aux[k]);
-    }
-
-    for ( k = 0; k < h; k++){
-        if ( (aux[k]%2) == 1){
+  
+    
+    for ( k = 0; k < total*8; k++){
+        if ( (mensaje[k]%2) == 1){
             if(k<8){
                 respuesta[0] |= 1 << (7-(k%8));
             }else{
@@ -388,25 +376,14 @@ decrypt_LSB1(BmpImage image, char * out_filename){
             }
         }
     }
+  
+   /* putchar(10);
+     for ( k = 0; k < 40; k++){
+        printf("%d",extension[k]);
+    }*/
 
-    //Parseo la extension
-    //Empiezo de 0 y hago una correcion de un incremento mal asignado en el anterior bucle
-    h=0;
-    j--;
-
-     for(; j<image->height && h<32; j++ ) {
-        for(; i<image->width && h<32; i++) {
-        //  printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
-            aux3[h++] = image->bitmap[(j*image->width) + i].red & 1;
-            aux3[h++] = image->bitmap[(j*image->width) + i].green & 1;
-            aux3[h++] = image->bitmap[(j*image->width) + i].blue & 1;
-        }
-        if (h < bit_array_size)
-            i=0;
-    }
-
-    for ( k = 0; k < h; k++){
-        if ( (aux3[k]%2) == 1){
+    for ( k = 0; k < 40; k++){
+        if ( (extension[k]%2) == 1){
             if(k<8){
                 ans_extension[0] |= 1 << (7-(k%8));
             }else{
