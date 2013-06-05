@@ -20,7 +20,7 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 	int primitive=0;
     	int chaining=-1;
 	int bits=0, templ=0;
-	EVP_CIPHER * cipher = getCipher(algorithm, mode, &bits);
+	EVP_CIPHER * cipher = getCipher(algorithm, mode/*, &bits*/);
 	
 	unsigned char key= malloc(sizeof(unsigned char)*EVP_CIPHER_key_length(cipher));;
 	unsigned char iv= malloc(sizeof(unsigned char)*EVP_CIPHER_iv_length(cipher));
@@ -55,7 +55,7 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 
 //TODO FIJARSE SI EXISTE OFB8
 EVP_CIPHER* 
-getCipher(char* algorithm, char* mode, int* bits){
+getCipher(char* algorithm, char* mode/*, int* bits*/){
 
 	OpenSSL_add_all_ciphers();
 	unsigned char cipherName[13];
@@ -64,19 +64,19 @@ getCipher(char* algorithm, char* mode, int* bits){
 
        		if( strcmp(algorithm,"aes128")==0){
        	     		 strcpy(cipherName,"aes-128-");
-            		*bits=128;
+            		//*bits=128;
         	}else if ( strcmp(algorithm,"aes192")==0){
            		 strcpy(cipherName,"aes-192-");
-            		*bits=192;
+            		//*bits=192;
         	}else if ( strcmp(algorithm,"aes256")==0){
           		 strcpy(cipherName,"aes-256-");
-           		 *bits=256;
+           		// *bits=256;
        		}else if ( strcmp(algorithm,"des")==0){
       	      		strcpy(cipherName,"des");
        		}
    	}else{
         strcpy(cipherName,"aes-128-");   
-        *bits=128;
+        //*bits=128;
    	}
 	
 	if(mode !=NULL){
