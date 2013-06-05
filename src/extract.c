@@ -330,11 +330,16 @@ decrypt_LSB1(BmpImage image, char * out_filename){
     char * tamanio = calloc(1,32);
 
     //Leo los primeros 32 para obtener el size;
+    printf("ARAFUE\n");
      for( j=0; j<image->height; j++ ) {
         for( i=0; i<image->width; i++) {
+         //   printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red & 1);
             aux2[h++] = image->bitmap[(j*image->width) + i].red & 1;
+           // printf("i: %d, j: %d - %d\n",i,j,image->bitmap[(j*image->width) + i].red);
             aux2[h++] = image->bitmap[(j*image->width) + i].green & 1;
+           // printf("%blue:%d\n",aux2[h-1]);
             aux2[h++] = image->bitmap[(j*image->width) + i].blue & 1;
+           // printf("green:%d\n",aux2[h-1]);
         }
         if (h < bit_array_size)
             i=0;
@@ -377,10 +382,11 @@ decrypt_LSB1(BmpImage image, char * out_filename){
         }
     }
   
-   /* putchar(10);
+   putchar(10);
      for ( k = 0; k < 40; k++){
         printf("%d",extension[k]);
-    }*/
+    }
+    putchar(10);
 
     for ( k = 0; k < 40; k++){
         if ( (extension[k]%2) == 1){
@@ -393,8 +399,9 @@ decrypt_LSB1(BmpImage image, char * out_filename){
         }
     }
     
-
-
+    printf("VALOR1:%d\n",'t');
+    printf("VALOR1:%d\n",ans_extension[1]);
+    
     printf("\n\n\tTexto oculto: %s\n", respuesta);
     printf("\tExtension: %s\n", ans_extension);
 

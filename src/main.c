@@ -229,7 +229,7 @@ int main(int argc, char **argv){
             //Actualizo el tamanio total
           printf("ACA ESTA H:%d\n",h);
             bit_array_size = h;
-          /*  for( k = 0; k<bit_array_size;k++)
+         /*   for( k = 0; k<bit_array_size;k++)
                 printf("%c", bit_array[k]);
             putchar(10);*/
             
@@ -250,7 +250,9 @@ int main(int argc, char **argv){
             printf("PASE TODO\n");
             //Llamo a la funcion correspondiente dependiendo del modo
             if ( mode == LSB1 ){
+             //   printf("ENTRO A LSB1");
                 encrypt_LSB1(image, bit_array, bit_array_size);
+             //   decrypt_LSB1(image,"salida2.txt");
             }else if ( mode == LSB4 ){
                 encrypt_LSB4(image, bit_array, bit_array_size);
             }else{
