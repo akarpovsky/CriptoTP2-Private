@@ -38,8 +38,8 @@ $(BINDIR)/$(TARGET): $(OBJECTS)
 	@echo "Linking complete!"
 	@echo "\n\t----->Creado el ejecutable: $(TARGET)\n"
 
-$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
-	@$(CC) $(CFLAGS) -c $< -o $@ $(LFLAGS)
+$(OBJECTS):$(OBJDIR)/%.o : $(SRCDIR)/%.c
+	@$(CC) $(CFLAGS) -c $< -o $@ 
 	@echo "Compiled "$<" successfully!"
 
 .PHONEY: clean
