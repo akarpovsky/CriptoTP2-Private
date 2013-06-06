@@ -6,5 +6,5 @@
 unsigned char* encryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght ,int * outl);
 unsigned char * decryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght, int * outl);
 unsigned char* encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght ,int * outl, int action);
-EVP_CIPHER*  getCipher(char* algorithm, char* mode/*, int* bits*/);
+const EVP_CIPHER*  getCipher(char* algorithm, char* mode/*, int* bits*/);
 #endif

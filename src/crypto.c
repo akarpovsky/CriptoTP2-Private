@@ -23,7 +23,7 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 	int primitive=0;
     	int chaining=-1;
 	int bits=0, templ=0;
-	EVP_CIPHER * cipher = getCipher(algorithm, mode/*, &bits*/);
+	const EVP_CIPHER * cipher = getCipher(algorithm, mode/*, &bits*/);
 	
 	unsigned char* key= (unsigned char*) malloc(sizeof(unsigned char)*EVP_CIPHER_key_length(cipher));
 	unsigned char* iv= (unsigned char*)malloc(sizeof(unsigned char)*EVP_CIPHER_iv_length(cipher));
@@ -57,7 +57,7 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 
 
 //TODO FIJARSE SI EXISTE OFB8
-EVP_CIPHER* 
+const EVP_CIPHER* 
 getCipher(char* algorithm, char* mode/*, int* bits*/){
 
 	OpenSSL_add_all_ciphers();

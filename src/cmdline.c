@@ -23,7 +23,7 @@
 
 #include <getopt.h>
 
-#include "cmdline.h"
+#include "includes/cmdline.h"
 
 const char *gengetopt_args_info_purpose = "";
 
