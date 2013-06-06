@@ -234,9 +234,11 @@ int main(int argc, char **argv){
                 printf("%c", bit_array[k]);
             putchar(10);*/
             
-            char* encryptedData=NULL;
+            char* encryptedData;	
+            int encryptSize=0;
             if(password != NULL){
-                //encryptedData=encryptData(primitiva,modo,bit_array);
+                encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)bit_array, bit_array_size, &encryptSize);
+		//TODO ACA FALTA PONERLE ADELANTE EL TAMAÑO Y TRANSFORMARLO EN BIT ARRAY
             }
 
             
@@ -280,7 +282,7 @@ int main(int argc, char **argv){
         }
 
         char * out_filename = args_info->out_arg;
-
+	
         if ( mode == LSB1 ){
             decrypt_LSB1(image2, out_filename);
         }else if ( mode == LSB4 ){

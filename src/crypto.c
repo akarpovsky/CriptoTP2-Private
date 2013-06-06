@@ -27,7 +27,7 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 	
 	unsigned char* key= (unsigned char*) malloc(sizeof(unsigned char)*EVP_CIPHER_key_length(cipher));
 	unsigned char* iv= (unsigned char*)malloc(sizeof(unsigned char)*EVP_CIPHER_iv_length(cipher));
-	unsigned char* out=malloc(lenght + 16);
+	unsigned char* out=malloc(lenght + EVP_CIPHER_block_size(cipher));
 	//TODO AVERIGUAR SI ESTO ESTA BIEN.
 	EVP_CIPHER_CTX ctx;
 	
@@ -56,7 +56,6 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 }
 
 
-//TODO FIJARSE SI EXISTE OFB8
 const EVP_CIPHER* 
 getCipher(char* algorithm, char* mode/*, int* bits*/){
 
@@ -86,7 +85,7 @@ getCipher(char* algorithm, char* mode/*, int* bits*/){
         	if( strcmp(mode,"ecb")==0){
         	        strcat(cipherName,"ecb");
         	}else if(strcmp(mode,"cfb")==0){
-                	strcat(cipherName,"cfb8");
+                	strcat(cipherName,"cfb");
             	}else if(strcmp(mode,"ofb")==0){
                 	strcat(cipherName,"ofb");
             	}else if(strcmp(mode,"cbc")==0){
