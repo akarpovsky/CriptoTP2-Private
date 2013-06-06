@@ -39,7 +39,7 @@ $(BINDIR)/$(TARGET): $(OBJECTS)
 	@echo "\n\t----->Creado el ejecutable: $(TARGET)\n"
 
 $(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.c
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@ $(LFLAGS)
 	@echo "Compiled "$<" successfully!"
 
 .PHONEY: clean
