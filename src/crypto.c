@@ -1,19 +1,21 @@
 #include "includes/defines.h"
 #include "includes/crypto.h"
 #include <openssl/evp.h>
-
-
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+#include <math.h>
 unsigned char*
 encryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght ,int * outl){
 
-	return encryptAndDecryptData(algorithm,mode,password,data,lenght ,outl, OP_ENCRYPT);
+	return encryptAndDecryptData(algorithm,mode,password,data,lenght ,outl, ENCRIPT);
 }
 
 unsigned char*
 decryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght ,int * outl){
 
-	return encryptAndDecryptData(algorithm,mode,password,data,lenght ,outl, OP_DECRYPT);
+	return encryptAndDecryptData(algorithm,mode,password,data,lenght ,outl, DECRIPT);
 }
 unsigned char*
 encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght ,int * outl, int action){
@@ -22,9 +24,9 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 	int bits=0, templ=0;
 	EVP_CIPHER * cipher = getCipher(algorithm, mode/*, &bits*/);
 	
-	unsigned char key= malloc(sizeof(unsigned char)*EVP_CIPHER_key_length(cipher));;
-	unsigned char iv= malloc(sizeof(unsigned char)*EVP_CIPHER_iv_length(cipher));
-	unsigned char* out=malloc(lenght+1);
+	unsigned char* key= (unsigned char*) malloc(sizeof(unsigned char)*EVP_CIPHER_key_length(cipher));
+	unsigned char* iv= (unsigned char*)malloc(sizeof(unsigned char)*EVP_CIPHER_iv_length(cipher));
+	unsigned char* out=malloc(lenght + 16);
 	//TODO AVERIGUAR SI ESTO ESTA BIEN.
 	EVP_CIPHER_CTX ctx;
 	
@@ -36,7 +38,7 @@ encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned cha
 	//le digo con que algoritmo, key e iv voy a trabajar y si quiero encriptar o desencriptar
 
 
-	EVP_CipherInit_ex(ctx,cipher, NULL, key, iv, action);
+	EVP_CipherInit_ex(&ctx,cipher, NULL, key, iv, action);
 	//encrypta data de longitud lenght y lo pone en out y guarda en outl el tamaño
 	EVP_CipherUpdate(&ctx, out, outl, data, lenght);
 	//encrypta el ultimo bloque, paddea con PKCS5 y deja en templ el tamaño.
