@@ -3,15 +3,16 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
+#include <openssl/evp.h>
 
-#include "includes/encrypt.h"
 #include "includes/defines.h"
 #include "includes/imageutils.h"
 #include "includes/embed.h"
 #include "includes/extract.h"
 #include "includes/main.h"
 #include "includes/cmdline.h"
-#include "includes/decrypt.h"
+#include "includes/crypto.h"
+#include "includes/portador.h"
 
 int main(int argc, char **argv){
     
