@@ -75,7 +75,7 @@ getCipher(char* algorithm, char* mode/*, int* bits*/){
           		 strcpy(cipherName,"aes-256-");
            		// *bits=256;
        		}else if ( strcmp(algorithm,"des")==0){
-      	      		strcpy(cipherName,"des");
+      	      		strcpy(cipherName,"des-");
        		}
    	}else{
         strcpy(cipherName,"aes-128-");   
