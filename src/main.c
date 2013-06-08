@@ -234,12 +234,42 @@ int main(int argc, char **argv){
                 printf("%c", bit_array[k]);
             putchar(10);*/
             
-            char* encryptedData;	
-            int encryptSize=0;
-            if(password != NULL){
-                encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)bit_array, bit_array_size, &encryptSize);
-		//TODO ACA FALTA PONERLE ADELANTE EL TAMAÑO Y TRANSFORMARLO EN BIT ARRAY
-            }
+		char* encrypted_bit_array; 			
+		int encryptSize=0;
+		int encrypted_bit_array_size=0;			
+		if(password != NULL){
+		    	char* encryptedData;	
+		    	int x=0;
+			encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)bit_array, bit_array_size, &encryptSize);
+			int endianSize2 = ntohl(encryptSize);
+			encrypted_bit_array_size= encryptSize+sizeof(DWORD)+ 1;
+	
+    			char* dataToTransorm=calloc(1,encrypted_bit_array_size);
+			memcpy(dataToTransorm, &endianSize2, 4);
+       			memcpy(dataToTransorm + sizeof(DWORD), encryptedData, encryptSize);
+        					
+			if((encrypted_bit_array=calloc(1,encrypted_bit_array_size*8))==NULL){
+				printf("No hay espacio suficiente en memoria");
+				return 0;
+			}
+			
+			for(x=0; x < encrypted_bit_array_size*8; ++dataToTransorm){
+        	   		printf("%c => ", *dataToTransorm);
+        	    /* perform bitwise AND for every bit of the character */
+        	   		for(i = 7; i >= 0; --i){
+        	        		if (*dataToTransorm & 1 << i){
+        	        	        encrypted_bit_array[x] = '1';
+        	        	}else{
+        	            		encrypted_bit_array[x] = '0';
+        	        	}
+        	       		printf("%c",encrypted_bit_array[x]);
+        	        	x++;
+        	  	}
+        	    	putchar('\n');
+        		}
+            
+
+		}
 
             
             printf("in_array_size= %d bits.\n", inl);

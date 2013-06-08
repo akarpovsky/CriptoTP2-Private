@@ -22,13 +22,13 @@ unsigned char*
 encryptAndDecryptData(unsigned char* algorithm,unsigned char * mode,unsigned char * password,unsigned char* data,int lenght ,int * outl, int action){
 	int primitive=0;
     	int chaining=-1;
-	int bits=0, templ=0;
-	const EVP_CIPHER * cipher = getCipher(algorithm, mode/*, &bits*/);
+	int templ=0;
+	const EVP_CIPHER * cipher = getCipher(algorithm, mode);
 	
 	unsigned char* key= (unsigned char*) malloc(sizeof(unsigned char)*EVP_CIPHER_key_length(cipher));
 	unsigned char* iv= (unsigned char*)malloc(sizeof(unsigned char)*EVP_CIPHER_iv_length(cipher));
 	unsigned char* out=malloc(lenght + EVP_CIPHER_block_size(cipher));
-	//TODO AVERIGUAR SI ESTO ESTA BIEN.
+	
 	EVP_CIPHER_CTX ctx;
 	
 	//creo la Key y el IV a partir de la pass que me dan
@@ -66,19 +66,19 @@ getCipher(char* algorithm, char* mode/*, int* bits*/){
 
        		if( strcmp(algorithm,"aes128")==0){
        	     		 strcpy(cipherName,"aes-128-");
-            		//*bits=128;
+            		
         	}else if ( strcmp(algorithm,"aes192")==0){
            		 strcpy(cipherName,"aes-192-");
-            		//*bits=192;
+            		
         	}else if ( strcmp(algorithm,"aes256")==0){
           		 strcpy(cipherName,"aes-256-");
-           		// *bits=256;
+           		
        		}else if ( strcmp(algorithm,"des")==0){
       	      		strcpy(cipherName,"des-");
        		}
    	}else{
         strcpy(cipherName,"aes-128-");   
-        //*bits=128;
+        
    	}
 	
 	if(mode !=NULL){
