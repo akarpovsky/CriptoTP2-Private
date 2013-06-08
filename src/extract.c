@@ -176,7 +176,7 @@ int decrypt_LSB4(BmpImage image, char * out_filename){
     //Recupero el mensaje;
     int i,j,k,h, bit_array_size;
     h = 0;
-    char * aux2 = calloc (1,mage->image_size*3*4);
+    char * aux2 = calloc (1,image->image_size*3*4);
     char * aux3 = calloc (1,64);
    // char * ans_extension = calloc(1,64);
     int * tamanio = calloc(1,sizeof(int));
