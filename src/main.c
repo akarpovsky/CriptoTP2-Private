@@ -250,7 +250,7 @@ int main(int argc, char **argv){
         					
 			if((encrypted_bit_array=calloc(1,encrypted_bit_array_size*8))==NULL){
 				printf("No hay espacio suficiente en memoria");
-				return 0;
+				exit(EXIT_FAILURE);
 			}
 			
 			for(x=0; x < encrypted_bit_array_size*8; ++dataToTransorm){
@@ -275,21 +275,26 @@ int main(int argc, char **argv){
             printf("in_array_size= %d bits.\n", inl);
             //Chequeo que se pueda almacenar la informacion en la imagen.
             //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE
-            if ( image_capacity < bit_array_size){
-                fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
-                exit(EXIT_FAILURE);
-            }
-
+		if(password==NULL)
+		    	if ( image_capacity < bit_array_size){
+	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
+	               		exit(EXIT_FAILURE);
+	            	}
+		else			
+			if ( image_capacity < encrypted_bit_array_size){
+	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
+	               		exit(EXIT_FAILURE);
+	            	}
             printf("PASE TODO\n");
             //Llamo a la funcion correspondiente dependiendo del modo
             if ( mode == LSB1 ){
              //   printf("ENTRO A LSB1");
-                encrypt_LSB1(image, bit_array, bit_array_size);
+                password==NULL?encrypt_LSB1(image, bit_array, bit_array_size):encrypt_LSB1(image, encrypted_bit_array, encrypted_bit_array_size);
              //   decrypt_LSB1(image,"salida2.txt");
             }else if ( mode == LSB4 ){
-                encrypt_LSB4(image, bit_array, bit_array_size);
+                password==NULL?encrypt_LSB4(image, bit_array, bit_array_size):encrypt_LSB4(image, encrypted_bit_array, encrypted_bit_array_size);
             }else{
-                encrypt_LSBE(image, bit_array, bit_array_size);
+                password==NULL?encrypt_LSBE(image, bit_array, bit_array_size): encrypt_LSBE(image, encrypted_bit_array, encrypted_bit_array_size);
             }
             //Salvo la nueva imagen
             if(save_bmp_image(image, args_info->out_arg) == FALSE){
