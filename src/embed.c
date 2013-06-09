@@ -127,6 +127,7 @@ encrypt_LSB1(BmpImage image, char * bit_array, int bit_array_size){
    
     int i;
     char * image_array = image->data;
+   // printf("ENTRE\n");
     for(i=0;i<bit_array_size;i++){
         if ((image_array[i]%2) == 0){
             if ( bit_array[i]%2 == 1){

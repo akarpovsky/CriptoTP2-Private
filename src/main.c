@@ -24,17 +24,16 @@ int main(int argc, char **argv){
 
     char * ptr; //Mensaje a Cifrar
 
-	
-    // Levanto argumentos de la linea de comandos
-    if(cmdline_parser(argc, argv, args_info) != 0) {
-        return EXIT_FAILURE;
-    }
-
     /* Para encriptación */
     char * algorithm = args_info->a_arg; // Algoritmo de encriptacion (AES128, DES, etc)
     char * encrypt_mode = args_info->m_arg; // Modo de encriptacion (CBC, OFB, etc)
     char * password = args_info->pass_arg; // Password ingresada por el usuario
     /* Fin encriptación */ 
+
+    // Levanto argumentos de la linea de comandos
+    if(cmdline_parser(argc, argv, args_info) != 0) {
+        return EXIT_FAILURE;
+    }
 
     if(args_info->ENCRYPT_mode_counter){
         printf("\n\nModo: Encrypt (EMBED)\n\n");
@@ -48,11 +47,10 @@ int main(int argc, char **argv){
     }
 
     printUserArguments(args_info);
-	
-	
 
     //Completo el modo (steg_orig guarda el algoritmo de esteganografiado)
     getStenographyMode(args_info->steg_arg,&mode);
+
     
     int i,j,h,k;
 
@@ -93,7 +91,7 @@ int main(int argc, char **argv){
         memcpy(in, &endianSize, 4);
         memcpy(in + sizeof(DWORD), sfile -> fileContents, sfile -> fileSize);
         memcpy(in + sizeof(DWORD) + sfile -> fileSize, sfile -> extension, strlen(sfile -> extension));
-         
+
         //PARCHE ARRIBA.
     //    printf("final: %s\n", (char*)(in+4));
 
@@ -119,7 +117,7 @@ int main(int argc, char **argv){
             exit(EXIT_FAILURE);
         }
 
-          printf("salgo");
+        printf("salgo");
         printf("Armo el array de bits para estenografear: \n");
 /*
         for(; h<32*8; h++){
@@ -144,11 +142,9 @@ int main(int argc, char **argv){
     //    file_size = message_size;
 //        char * extension = sfile -> extension;
         // char * bit_array = calloc(1,32+padding_size+inl*CHAR_BITS);
-	 char * bit_array=NULL;
-	if(password==NULL){       
-		 char * bit_array = calloc(1,inl*8);
-       	 for(h=0; h < inl*8; ++in)
-       	 {
+        char * bit_array = calloc(1,inl*8);
+        for(h=0; h < inl*8; ++in)
+        {
             printf("%c => ", *in);
             /* perform bitwise AND for every bit of the character */
             for(i = 7; i >= 0; --i){
@@ -162,21 +158,18 @@ int main(int argc, char **argv){
             }
             putchar('\n');
         }
-	in=in-inl;
-	}
- 
+
+        //Imprimo informacion sobre la imagen
+        print_bmp_image(image);
             
-		char* encrypted_bit_array; 			
+/*		char* encrypted_bit_array; 			
 		int encryptSize=0;
-		int encrypted_bit_array_size=0;	
-			
+		int encrypted_bit_array_size=0;			
 		if(password != NULL){
 		    	char* encryptedData;	
 		    	int x=0;
-			printf("el mensaje a encriptar es %s",in+sizeof(DWORD));
-			encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)in,inl, &encryptSize);
+			encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)bit_array, bit_array_size, &encryptSize);
 			int endianSize2 = ntohl(encryptSize);
-			printf("EL ENCRYPT SIZE ES %d\n",encryptSize);
 			encrypted_bit_array_size= encryptSize+sizeof(DWORD)+ 1;
 	
     			char* dataToTransorm=calloc(1,encrypted_bit_array_size);
@@ -203,12 +196,11 @@ int main(int argc, char **argv){
         	    	putchar('\n');
         		}
             
-		
+
 		}
 
-                   //Imprimo informacion sobre la imagen
-        	print_bmp_image(image);
-            //printf("in_array_size= %d bits.\n", inl);
+            
+            printf("in_array_size= %d bits.\n", inl);
             //Chequeo que se pueda almacenar la informacion en la imagen.
             //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE*/
         int image_capacity = image->width * image->height * mode;
@@ -217,21 +209,21 @@ int main(int argc, char **argv){
 	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
 	               		exit(EXIT_FAILURE);
 	            	}
-		else			
+		/*else			
 			if ( image_capacity < encrypted_bit_array_size){
 	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
 	               		exit(EXIT_FAILURE);
-	            	}
+	            	}*/
             printf("PASE TODO\n");
             //Llamo a la funcion correspondiente dependiendo del modo
             if ( mode == LSB1 ){
              //   printf("ENTRO A LSB1");
-                (password==NULL)?encrypt_LSB1(image, bit_array, inl*8):encrypt_LSB1(image, encrypted_bit_array,encrypted_bit_array_size*8);
+                encrypt_LSB1(image, bit_array, inl*8);//:encrypt_LSB1(image, encrypted_bit_array, encrypted_bit_array_size);
              //   decrypt_LSB1(image,"salida2.txt");
             }else if ( mode == LSB4 ){
-                (password==NULL)?encrypt_LSB4(image, bit_array, inl*8):encrypt_LSB4(image, encrypted_bit_array, encrypted_bit_array_size*8);
+                encrypt_LSB4(image, bit_array, inl*8);//:encrypt_LSB4(image, encrypted_bit_array, encrypted_bit_array_size);
             }else{
-               (password==NULL)?encrypt_LSBE(image, bit_array, inl*8): encrypt_LSBE(image, encrypted_bit_array, encrypted_bit_array_size*8);
+               encrypt_LSBE(image, bit_array, inl*8);//: encrypt_LSBE(image, encrypted_bit_array, encrypted_bit_array_size);
             }
             //Salvo la nueva imagen
             if(save_bmp_image(image, args_info->out_arg) == FALSE){
@@ -245,13 +237,13 @@ int main(int argc, char **argv){
         /* MODO EXTRACT */
 
         char * out_filename = args_info->out_arg;
-	
 
         //Abro la imagen
         BmpImage image = create_bmp_image(args_info->p_arg);
+        
 
         // Cargo y hago el extract de la imagen
-        if(extract_bmp_image(image, out_filename, mode,algorithm,encrypt_mode,password) != LOADING_OK){
+        if(extract_bmp_image(image, out_filename, mode,NULL,NULL,NULL) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido extraer el contenido oculto de la imagen con contenido. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
             exit(EXIT_FAILURE);
         }
