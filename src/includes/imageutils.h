@@ -37,7 +37,7 @@ void printUserArguments(struct gengetopt_args_info *args_info);
 
 BmpImage create_bmp_image(char * filename);
 
-int extract_bmp_image(BmpImage im, char * out_filename, int mode);
+int extract_bmp_image(BmpImage im, char * out_filename,int mode, char* algorithm, char* encrypt_mode, char* password);
 int save_bmp_image(BmpImage im, char * filename);
 void free_bmp_image(struct bmp_image* im);
 BmpImage duplicate(BmpImage im, char * filename);

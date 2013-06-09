@@ -12,7 +12,7 @@ create_bmp_image(char * filename)
 
 
 int 
-extract_bmp_image(BmpImage im, char * out_filename,int mode)
+extract_bmp_image(BmpImage im, char * out_filename,int mode, char* algorithm, char* encrypt_mode, char* password)
 {
 
 
@@ -50,13 +50,13 @@ extract_bmp_image(BmpImage im, char * out_filename,int mode)
     
     if ( mode == LSB1 ){
         printf("LSB1\n");
-            decrypt_LSB1(im, out_filename, fp);
+            decrypt_LSB1(im, out_filename, fp,algorithm,encrypt_mode,password);
     }else if ( mode == LSB4 ){
             printf("LSB4\n");
-            decrypt_LSB4(im, out_filename, fp);
+            decrypt_LSB4(im, out_filename, fp, algorithm,encrypt_mode,password);
     }else{
         printf("LSBE\n");
-            decrypt_LSBE(im, out_filename, fp);
+            decrypt_LSBE(im, out_filename, fp, algorithm,encrypt_mode,password);
     }
 
     fclose(fp);

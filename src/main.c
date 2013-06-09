@@ -112,6 +112,30 @@ int main(int argc, char **argv){
             exit(EXIT_FAILURE);
         }
 
+        printf("Armo el array de bits para estenografear: \n");
+/*
+        for(; h<32*8; h++){
+            printf("%c", *(in-40));
+            in++;
+        }
+*/
+        
+        //LUEGO PONGO LOS BITS DEL MENSAJE
+        for(h=0; h < inl*8; ++in)
+        {
+            printf("%c => ", *in);
+            /* perform bitwise AND for every bit of the character */
+            for(i = 7; i >= 0; --i){
+                if (*in & 1 << i){
+                    bit_array[h] = '1';
+                }else{
+                    bit_array[h] = '0';
+                }
+                printf("%c",bit_array[h]);
+                h++;
+            }
+            putchar('\n');
+        }
                //Calculo capacidad de la imagen
 
         //Hace que el size sea múltiplo de LSB correspondiente y agrega padding
@@ -210,6 +234,7 @@ int main(int argc, char **argv){
         //Abro la imagen
         BmpImage image = create_bmp_image(args_info->p_arg);
         
+
         // Cargo y hago el extract de la imagen
         if(extract_bmp_image(image, out_filename, mode) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido extraer el contenido oculto de la imagen con contenido. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
