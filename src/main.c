@@ -107,10 +107,10 @@ int main(int argc, char **argv){
         BmpImage image = create_bmp_image(args_info->p_arg);
 
         //Cargo la imagen
-        if(load_bmp_image(image) != LOADING_OK){
+       // if(load_bmp_image(image) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido cargar la imagen portadora. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
             exit(EXIT_FAILURE);
-        }
+       // }
 
 
         //Calculo capacidad de la imagen
@@ -273,24 +273,16 @@ int main(int argc, char **argv){
         /* MODO EXTRACT */
 
         //Abro la imagen
-        BmpImage image2 = create_bmp_image(args_info->p_arg);
+        BmpImage image = create_bmp_image(args_info->p_arg);
+        
+        char * out_filename = args_info->out_arg;
 
         // Cargo la imagen
-        if(load_bmp_image(image2) != LOADING_OK){
+        
+        if(extract_bmp_image(image, out_filename, mode) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido cargar la imagen con contenido oculto. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
             exit(EXIT_FAILURE);
         }
-
-        char * out_filename = args_info->out_arg;
-	
-        if ( mode == LSB1 ){
-            decrypt_LSB1(image2, out_filename);
-        }else if ( mode == LSB4 ){
-            decrypt_LSB4(image2, out_filename);
-        }else{
-            decrypt_LSBE(image2, out_filename);
-        }
-
 
     }
 

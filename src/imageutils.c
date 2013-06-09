@@ -10,9 +10,12 @@ create_bmp_image(char * filename)
     return ret;
 }
 
+
 int 
-load_bmp_image(BmpImage im)
+extract_bmp_image(BmpImage im, char * out_filename,int mode)
 {
+
+
     FILE *fp;
     int array_offset;
 
@@ -43,31 +46,17 @@ load_bmp_image(BmpImage im)
     fseek(fp, 0x22, SEEK_SET);
     FCHK(fread(&(im->image_size), sizeof(im->image_size), 1, fp));
 
-    im->bitmap = malloc(im->image_size * sizeof(Rgb));
     fseek(fp, im->header_size, SEEK_SET);
-
-//  FCHK(fread(im->bitmap, im->image_size, 1, fp));
-
-    Rgb *pixel = (Rgb*) malloc( sizeof(Rgb) );
-    int read, i,j;
-    for( j=0; j<im->height; j++ ) {
-    //  printf( "------ Row %d\n", j+1 );
-        read = 0;
-        for( i=0; i<im->width; i++ ) {
-            if( fread(pixel, 1, sizeof(Rgb), fp) != sizeof(Rgb) ) {
-                printf( "Error reading pixel!\n" );
-                return -1;
-            }
-            read += sizeof(Rgb);
-            im->bitmap[(j*im->width) + i].red = pixel->red;
-            im->bitmap[(j*im->width) + i].green = pixel->green;
-            im->bitmap[(j*im->width) + i].blue = pixel->blue;
-        }
-        if( read % 4 != 0 ) {
-            read = 4 - (read%4);
-            printf( "Padding: %d bytes\n", read );
-            fread( pixel, read, 1, fp );
-        }
+    
+    if ( mode == LSB1 ){
+        printf("LSB1\n");
+            decrypt_LSB1(im, out_filename, fp);
+    }else if ( mode == LSB4 ){
+            printf("LSB4\n");
+            decrypt_LSB4(im, out_filename, fp);
+    }else{
+        printf("LSBE\n");
+            decrypt_LSBE(im, out_filename, fp);
     }
 
     fclose(fp);
@@ -91,7 +80,7 @@ save_bmp_image(BmpImage im, char * filename)
     //  FCHK(fwrite(im->bitmap, im->image_size, 1, fp));
         for( j=0; j<im->height; j++ ) {
             for( i=0; i<im->width; i++ ) {
-                FCHK(fwrite(&(im->bitmap[(j*im->width) + i]), sizeof(Rgb), 1, fp));
+              //  FCHK(fwrite(&(im->bitmap[(j*im->width) + i]), sizeof(Rgb), 1, fp));
             }
     }
 
@@ -102,10 +91,12 @@ save_bmp_image(BmpImage im, char * filename)
 }
 
 void
+
 free_bmp_image(struct bmp_image* im)
 {
     free(im->header);
-    free(im->bitmap);
+    free(im->size);
+    free(im->data);
 }
 
 BmpImage 
@@ -119,9 +110,9 @@ duplicate(BmpImage im, char * filename) {
     ret->image_size = im->image_size;
     ret->header_size = im->header_size;
     ret->header = malloc(im->header_size);
-    ret->bitmap = malloc(im->image_size);
+ //   ret->bitmap = malloc(im->image_size);
     memcpy(ret->header, im->header, im->header_size);
-    memcpy(ret->bitmap, im->bitmap, im->image_size);
+   // memcpy(ret->bitmap, im->bitmap, im->image_size);
 
     return ret;
 }
@@ -144,7 +135,7 @@ print_bmp_bitmap(BmpImage im){
     for( j=0; j<im->height; j++ ) {
         printf( "------ Row %d\n", j+1 );
         for( i=0; i<im->width; i++ ) {
-            printf( "Pixel %d: %3d %3d %3d\n", i+1, im->bitmap[(j*im->width) + i].red, im->bitmap[(j*im->width) + i].green, im->bitmap[(j*im->width) + i].blue );
+          //  printf( "Pixel %d: %3d %3d %3d\n", i+1, im->bitmap[(j*im->width) + i].red, im->bitmap[(j*im->width) + i].green, im->bitmap[(j*im->width) + i].blue );
         }
     }
 }

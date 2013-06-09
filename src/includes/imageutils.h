@@ -23,11 +23,12 @@ struct bmp_image {
     int height;
     short pixel_bits;
     int image_size;
-
     int header_size;
-
     unsigned char *header;
-    Rgb * bitmap;
+    char * data;
+    int * size;
+    char * extension;
+  //  Rgb * bitmap;
 };
 
 typedef struct bmp_image * BmpImage;
@@ -35,7 +36,8 @@ void printUserArguments(struct gengetopt_args_info *args_info);
 
 
 BmpImage create_bmp_image(char * filename);
-int load_bmp_image(BmpImage im);
+
+int extract_bmp_image(BmpImage im, char * out_filename, int mode);
 int save_bmp_image(BmpImage im, char * filename);
 void free_bmp_image(struct bmp_image* im);
 BmpImage duplicate(BmpImage im, char * filename);

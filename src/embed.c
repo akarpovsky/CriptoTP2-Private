@@ -5,7 +5,7 @@
 
 void
 encrypt_LSBE(BmpImage image, char * bit_array, int bit_array_size){
-
+/*
     int amount_pixels = bit_array_size/RGB + bit_array_size%RGB;
     int i,j,h;
     int ocultar = FALSE;
@@ -53,12 +53,12 @@ encrypt_LSBE(BmpImage image, char * bit_array, int bit_array_size){
             }
 
         }
-    }
+    }*/
 }
 
 void
 encrypt_LSB4(BmpImage image, char * bit_array, int bit_array_size){
-    int amount_pixels = bit_array_size/RGB_LSB4 + bit_array_size%RGB_LSB4;
+ /*   int amount_pixels = bit_array_size/RGB_LSB4 + bit_array_size%RGB_LSB4;
     int i,j,h;
     h=0;
     putchar(10);
@@ -138,7 +138,7 @@ encrypt_LSB4(BmpImage image, char * bit_array, int bit_array_size){
             }
             
         }
-    }
+    }*/
 }
 
 void
@@ -154,7 +154,7 @@ encrypt_LSB1(BmpImage image, char * bit_array, int bit_array_size){
     putchar(10);
 
     printf("VALOR:%c", (unsigned char) 254);*/
-    int amount_pixels = bit_array_size/RGB + bit_array_size%RGB;
+  /*  int amount_pixels = bit_array_size/RGB + bit_array_size%RGB;
     int i,j,h;
     h=0;
     for( j=0; j<image->height && h<bit_array_size; j++ ) {
@@ -177,6 +177,6 @@ encrypt_LSB1(BmpImage image, char * bit_array, int bit_array_size){
                 image->bitmap[(j*image->width) + i].blue = image->bitmap[(j*image->width) + i].blue | 1;
             
         }
-    }
+    }*/
 
 }
