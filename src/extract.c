@@ -1,6 +1,18 @@
 #include "includes/defines.h"
+#include "includes/imageutils.h"
+#include "includes/embed.h"
 #include "includes/extract.h"
+#include "includes/main.h"
+#include "includes/cmdline.h"
+#include "includes/crypto.h"
+#include "includes/portador.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 #include <math.h>
+#include <openssl/evp.h>
+
 
 int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorithm, char* encrypt_mode, char* password){
 
@@ -29,12 +41,12 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
    	         i++;
    	 }while(ext[i-1]);
 	 image->data=msg;
-	 image->size=size;
+	 *(image->size)=size;
 	 image->extension = ext;
     }else{
 		decryptedMsg=(unsigned char *)decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
 		image->data=decryptedMsg;
-	 	image->size=decryptedSize;
+	 	*(image->size)=decryptedSize;
 	 	image->extension = decryptedMsg+decryptedSize;
 		
 	}
@@ -45,7 +57,7 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
-    FCHK(fwrite(image->data, (size_t)image->size, sizeof(char), salida)); 
+    FCHK(fwrite(image->data, *(image->size), sizeof(char), salida)); 
 
 }
 
@@ -78,40 +90,38 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
     	        i++;
     	}while(ext[i-1]);
 	 image->data=msg;
-	 image->size=size;
+	 *(image->size)=size;
 	 image->extension = ext;
     }else{
 		decryptedMsg=(unsigned char *)decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
 		image->data=decryptedMsg;
-	 	image->size=decryptedSize;
+	 	*(image->size)=decryptedSize;
 	 	image->extension = decryptedMsg+decryptedSize;
 		
 	}
-
-   
-    image->data=msg;
-    image->size=size;
-    image->extension = ext;
 
     char file_name[100];
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
-    FCHK(fwrite(image->data,(size_t) image->size, sizeof(char), salida)); 
+    FCHK(fwrite(image->data,*(image->size), sizeof(char), salida)); 
 
 }
 
 
 int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm, char* encrypt_mode, char* password){
 
-    int size, i, decryptedSize;
+
+    int size=0, i, decryptedSize;
     char * msg;
     char * ext; 
     unsigned char * decryptedMsg;
+    char file_name[100]={0};
     for(i=0; i<4; i++){
         *(((char*)&size)+3-i)=get_lsb1(fp);
+	
     }
-    printf("NUEVO SIZE:%d\n", size);
+    	printf("NUEVO SIZE:%d\n", size);
 
     msg = calloc(size+10, sizeof(char));
     ext = calloc(10, sizeof(char));
@@ -119,31 +129,33 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     for(i=0; i<size; i++){
         msg[i]=get_lsb1(fp);
     }
-    
-    
+    	  
     i = 0;
     if(password==NULL){
+	
   	  do{
     	        ext[i]=get_lsb1(fp);
     	        i++;
   	 }while(ext[i-1]);
-   
+   	
    	 image->data=msg;
-   	 image->size=size;
+   	 *(image->size)=size;
     	image->extension = ext;
     }else{
+		
 		decryptedMsg=(unsigned char *) decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
-		image->data=decryptedMsg;
-	 	image->size=decryptedSize;
-	 	image->extension = decryptedMsg+decryptedSize;
+		printf("LA DATA ES %s\n",decryptedMsg+sizeof(DWORD));		
+		image->data=decryptedMsg+sizeof(DWORD);
+	 	*(image->size)=decryptedSize-5-sizeof(DWORD);
+	 	image->extension = decryptedMsg+decryptedSize-5;
 		
 	}
- 
-    char file_name[100];
+ 	
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
-    FCHK(fwrite(image->data, (size_t)image->size, sizeof(char), salida)); 
+    printf("%s\n",image->data);
+    FCHK(fwrite(image->data, *(image->size), sizeof(char), salida)); 
 
 }
 
