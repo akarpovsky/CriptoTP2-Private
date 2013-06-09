@@ -146,8 +146,11 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
 		decryptedMsg=(unsigned char *) decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
 		printf("LA DATA ES %s\n",decryptedMsg+sizeof(DWORD));		
 		image->data=decryptedMsg+sizeof(DWORD);
-	 	*(image->size)=decryptedSize-5-sizeof(DWORD);
-	 	image->extension = decryptedMsg+decryptedSize-5;
+		for(i=0; i<4; i++){
+			*(((char*)&size)+3-i)=*(decryptedMsg+i);
+		}
+	 	*(image->size)=size;//decryptedSize-5-sizeof(DWORD);
+	 	image->extension = decryptedMsg+size+sizeof(DWORD);
 		
 	}
  	
