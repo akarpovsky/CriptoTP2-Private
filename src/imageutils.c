@@ -11,6 +11,47 @@ create_bmp_image(char * filename)
 }
 
 
+int
+load_bmp_image(BmpImage im)
+{
+    FILE *fp;
+    int array_offset;
+
+    fp = fopen(im->filename, "rb");
+
+    if(fp == NULL) {
+        THROW_FILE_ERROR;
+    }
+
+    fseek(fp, 10, SEEK_SET);
+    FCHK(fread(&array_offset, 4, 1, fp));
+
+    /*Se copia el header entero para guardarlo como estaba*/
+    im->header_size = array_offset;
+    im->header = malloc(im->header_size);
+    fseek(fp, 0x00, SEEK_SET);
+    FCHK(fread(im->header, im->header_size, 1, fp));
+
+    fseek(fp, 0x12, SEEK_SET);
+    FCHK(fread(&(im->width), sizeof(im->width), 1, fp));
+
+    fseek(fp, 0x16, SEEK_SET);
+    FCHK(fread(&(im->height), sizeof(im->height), 1, fp));
+
+    fseek(fp, 0x1C, SEEK_SET);
+    FCHK(fread(&(im->pixel_bits), sizeof(im->pixel_bits), 1, fp));
+
+    fseek(fp, 0x22, SEEK_SET);
+    FCHK(fread(&(im->image_size), sizeof(im->image_size), 1, fp));
+
+    fseek(fp, im->header_size, SEEK_SET);
+    im->data = calloc(im->image_size,sizeof(char));
+    FCHK(fread(im->data, im->image_size, 1, fp));
+
+    fclose(fp);
+    return LOADING_OK;
+}
+
 int 
 extract_bmp_image(BmpImage im, char * out_filename,int mode, char* algorithm, char* encrypt_mode, char* password)
 {
@@ -77,12 +118,12 @@ save_bmp_image(BmpImage im, char * filename)
     if(fp != NULL) {
         fseek(fp, 0x00, SEEK_SET);
         FCHK(fwrite(im->header, im->header_size, 1, fp));
-    //  FCHK(fwrite(im->bitmap, im->image_size, 1, fp));
-        for( j=0; j<im->height; j++ ) {
+        FCHK(fwrite(im->data, im->image_size, 1, fp));
+      /*  for( j=0; j<im->height; j++ ) {
             for( i=0; i<im->width; i++ ) {
               //  FCHK(fwrite(&(im->bitmap[(j*im->width) + i]), sizeof(Rgb), 1, fp));
             }
-    }
+    }*/
 
         fclose(fp);
         return true;
