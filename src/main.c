@@ -234,32 +234,67 @@ int main(int argc, char **argv){
                 printf("%c", bit_array[k]);
             putchar(10);*/
             
-            char* encryptedData;	
-            int encryptSize=0;
-            if(password != NULL){
-                encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)bit_array, bit_array_size, &encryptSize);
-		//TODO ACA FALTA PONERLE ADELANTE EL TAMAÑO Y TRANSFORMARLO EN BIT ARRAY
-            }
+		char* encrypted_bit_array; 			
+		int encryptSize=0;
+		int encrypted_bit_array_size=0;			
+		if(password != NULL){
+		    	char* encryptedData;	
+		    	int x=0;
+			encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)bit_array, bit_array_size, &encryptSize);
+			int endianSize2 = ntohl(encryptSize);
+			encrypted_bit_array_size= encryptSize+sizeof(DWORD)+ 1;
+	
+    			char* dataToTransorm=calloc(1,encrypted_bit_array_size);
+			memcpy(dataToTransorm, &endianSize2, 4);
+       			memcpy(dataToTransorm + sizeof(DWORD), encryptedData, encryptSize);
+        					
+			if((encrypted_bit_array=calloc(1,encrypted_bit_array_size*8))==NULL){
+				printf("No hay espacio suficiente en memoria");
+				exit(EXIT_FAILURE);
+			}
+			
+			for(x=0; x < encrypted_bit_array_size*8; ++dataToTransorm){
+        	   		printf("%c => ", *dataToTransorm);
+        	    /* perform bitwise AND for every bit of the character */
+        	   		for(i = 7; i >= 0; --i){
+        	        		if (*dataToTransorm & 1 << i){
+        	        	        encrypted_bit_array[x] = '1';
+        	        	}else{
+        	            		encrypted_bit_array[x] = '0';
+        	        	}
+        	       		printf("%c",encrypted_bit_array[x]);
+        	        	x++;
+        	  	}
+        	    	putchar('\n');
+        		}
+            
+
+		}
 
             
             printf("in_array_size= %d bits.\n", inl);
             //Chequeo que se pueda almacenar la informacion en la imagen.
             //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE
-            if ( image_capacity < bit_array_size){
-                fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
-                exit(EXIT_FAILURE);
-            }
-
+		if(password==NULL)
+		    	if ( image_capacity < bit_array_size){
+	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
+	               		exit(EXIT_FAILURE);
+	            	}
+		else			
+			if ( image_capacity < encrypted_bit_array_size){
+	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
+	               		exit(EXIT_FAILURE);
+	            	}
             printf("PASE TODO\n");
             //Llamo a la funcion correspondiente dependiendo del modo
             if ( mode == LSB1 ){
              //   printf("ENTRO A LSB1");
-                encrypt_LSB1(image, bit_array, bit_array_size);
+                password==NULL?encrypt_LSB1(image, bit_array, bit_array_size):encrypt_LSB1(image, encrypted_bit_array, encrypted_bit_array_size);
              //   decrypt_LSB1(image,"salida2.txt");
             }else if ( mode == LSB4 ){
-                encrypt_LSB4(image, bit_array, bit_array_size);
+                password==NULL?encrypt_LSB4(image, bit_array, bit_array_size):encrypt_LSB4(image, encrypted_bit_array, encrypted_bit_array_size);
             }else{
-                encrypt_LSBE(image, bit_array, bit_array_size);
+                password==NULL?encrypt_LSBE(image, bit_array, bit_array_size): encrypt_LSBE(image, encrypted_bit_array, encrypted_bit_array_size);
             }
             //Salvo la nueva imagen
             if(save_bmp_image(image, args_info->out_arg) == FALSE){
