@@ -107,17 +107,15 @@ int main(int argc, char **argv){
         BmpImage image = create_bmp_image(args_info->p_arg);
 
         //Cargo la imagen
-       // if(load_bmp_image(image) != LOADING_OK){
+        if(load_bmp_image(image) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido cargar la imagen portadora. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
             exit(EXIT_FAILURE);
-       // }
+        }
 
-
-        //Calculo capacidad de la imagen
-        int image_capacity = image->width * image->height * mode;
+               //Calculo capacidad de la imagen
 
         //Hace que el size sea múltiplo de LSB correspondiente y agrega padding
-        int bit_array_size;
+  //      int bit_array_size;
 
 
         // int message_size = (inl*CHAR_BITS) + (padding_size-(inl*CHAR_BITS)%padding_size);
@@ -126,115 +124,14 @@ int main(int argc, char **argv){
 
    //     int file_size;
     //    file_size = message_size;
-        char * extension = sfile -> extension;
+//        char * extension = sfile -> extension;
         // char * bit_array = calloc(1,32+padding_size+inl*CHAR_BITS);
-        char * bit_array = calloc(1,inl*8);
+//        char * bit_array = calloc(1,inl*8);
 
         //Imprimo informacion sobre la imagen
         print_bmp_image(image);
-
-        // Me muevo 4 bytes para pasar directamente al texto!
-       // ptr = in + sizeof(int);
-
-
-        //ARMO EL VECTOR CON LOS BITS
-        //PRIMERO ME QUEDO CON EL TAMANIO
-        h =0;
-        //printf("Padding: %d\n", padding_size);
-        //printf("File size: %d => ", file_size);
-/*        for(i = 31; i >= 0; --i){
-                if (endianSize & 1 << i){
-                    bit_array[h] = '1';
-                }else{
-                    bit_array[h] = '0';
-                }
-                printf("%c",bit_array[h]);
-                h++;
-        }
-            putchar('\n');
-            h= h+1;*/
-/*        if( mode == LSB1){
-            //1 BIT DE CORRECION PARA QUE SEA MULTIPLO DE 3
-            bit_array[h++] = '0';
-        }else if ( mode == LSB4){
-            //4 BIT DE CORRECION PARA QUE SEA MULTIPLO DE 12
-            bit_array[h++] = '0';
-            bit_array[h++] = '0';
-            bit_array[h++] = '0';
-            bit_array[h++] = '0';
-        }
-        
-        int size_length = h;*/
-       // h=0;
-        printf("Armo el array de bits para estenografear: \n");
-/*
-        for(; h<32*8; h++){
-            printf("%c", *(in-40));
-            in++;
-        }
-
-        putchar(10);
-        putchar(10);
-        putchar(10);
-        putchar(10);
-        putchar(10);*/
-        
-        //LUEGO PONGO LOS BITS DEL MENSAJE
-        for(h=0; h < inl*8; ++in)
-        {
-            printf("%c => ", *in);
-            /* perform bitwise AND for every bit of the character */
-            for(i = 7; i >= 0; --i){
-                if (*in & 1 << i){
-                    bit_array[h] = '1';
-                }else{
-                    bit_array[h] = '0';
-                }
-                printf("%c",bit_array[h]);
-                h++;
-            }
-            putchar('\n');
-        }
-
-        //Completo el Padding con 0 para que no afecte el ocultamiento.
-       /* for (; h<(message_size+size_length);h++){
-            bit_array[h] = '0';
-        }
-
-        printf("Extension bits: \n");*/
-         //LUEGO PARSEO LA EXTENSION
-       /* for(; *extension != 0; ++extension)
-        {
-            printf("%c => ", *extension);*/
-            /* perform bitwise AND for every bit of the character */
-       /*     for(i = 7; i >= 0; --i){
-                if (*extension & 1 << i){
-                    bit_array[h] = '1';
-                }else{
-                    bit_array[h] = '0';
-                }
-                printf("%c",bit_array[h]);
-                h++;
-            }
-            putchar('\n');
-        }
-
-
-            //Completo el Padding con 0 para que no afecte el ocultamiento.
-            if( mode != LSBE){
-                for ( i = h; (h%padding_size) != 0;h++){
-                    bit_array[h] = '0';
-                }
-            }*/
-
-            //Actualizo el tamanio total
-          printf("ACA ESTA H:%d\n",h);
-            bit_array_size = h;
-         /*   for( k = 0; k<bit_array_size;k++)
-                printf("%c", bit_array[k]);
-            putchar(10);*/
             
-		char* encrypted_bit_array; 			
+/*		char* encrypted_bit_array; 			
 		int encryptSize=0;
 		int encrypted_bit_array_size=0;			
 		if(password != NULL){
@@ -255,7 +152,7 @@ int main(int argc, char **argv){
 			
 			for(x=0; x < encrypted_bit_array_size*8; ++dataToTransorm){
         	   		printf("%c => ", *dataToTransorm);
-        	    /* perform bitwise AND for every bit of the character */
+        	    // perform bitwise AND for every bit of the character 
         	   		for(i = 7; i >= 0; --i){
         	        		if (*dataToTransorm & 1 << i){
         	        	        encrypted_bit_array[x] = '1';
@@ -274,27 +171,28 @@ int main(int argc, char **argv){
             
             printf("in_array_size= %d bits.\n", inl);
             //Chequeo que se pueda almacenar la informacion en la imagen.
-            //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE
+            //TODO: VAMOS A TENER QUE VER COMO CALCULAR LA CAPACIDAD CON LSBE*/
+        int image_capacity = image->width * image->height * mode;
 		if(password==NULL)
-		    	if ( image_capacity < bit_array_size){
+		    	if ( image_capacity < inl){
 	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
 	               		exit(EXIT_FAILURE);
 	            	}
-		else			
+		/*else			
 			if ( image_capacity < encrypted_bit_array_size){
 	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
 	               		exit(EXIT_FAILURE);
-	            	}
+	            	}*/
             printf("PASE TODO\n");
             //Llamo a la funcion correspondiente dependiendo del modo
             if ( mode == LSB1 ){
              //   printf("ENTRO A LSB1");
-                password==NULL?encrypt_LSB1(image, bit_array, bit_array_size):encrypt_LSB1(image, encrypted_bit_array, encrypted_bit_array_size);
+                encrypt_LSB1(image, in, inl);//:encrypt_LSB1(image, encrypted_bit_array, encrypted_bit_array_size);
              //   decrypt_LSB1(image,"salida2.txt");
             }else if ( mode == LSB4 ){
-                password==NULL?encrypt_LSB4(image, bit_array, bit_array_size):encrypt_LSB4(image, encrypted_bit_array, encrypted_bit_array_size);
+                encrypt_LSB4(image, in, inl);//:encrypt_LSB4(image, encrypted_bit_array, encrypted_bit_array_size);
             }else{
-                password==NULL?encrypt_LSBE(image, bit_array, bit_array_size): encrypt_LSBE(image, encrypted_bit_array, encrypted_bit_array_size);
+               encrypt_LSBE(image, in, inl);//: encrypt_LSBE(image, encrypted_bit_array, encrypted_bit_array_size);
             }
             //Salvo la nueva imagen
             if(save_bmp_image(image, args_info->out_arg) == FALSE){
@@ -307,15 +205,14 @@ int main(int argc, char **argv){
     }else{
         /* MODO EXTRACT */
 
+        char * out_filename = args_info->out_arg;
+
         //Abro la imagen
         BmpImage image = create_bmp_image(args_info->p_arg);
         
-        char * out_filename = args_info->out_arg;
-
-        // Cargo la imagen
-        
+        // Cargo y hago el extract de la imagen
         if(extract_bmp_image(image, out_filename, mode) != LOADING_OK){
-            fprintf(stderr, "Error: No se ha podido cargar la imagen con contenido oculto. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
+            fprintf(stderr, "Error: No se ha podido extraer el contenido oculto de la imagen con contenido. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
             exit(EXIT_FAILURE);
         }
 
