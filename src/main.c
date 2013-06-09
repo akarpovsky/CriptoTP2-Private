@@ -314,7 +314,7 @@ int main(int argc, char **argv){
 
         // Cargo la imagen
         
-        if(extract_bmp_image(image, out_filename, mode) != LOADING_OK){
+        if(extract_bmp_image(image, out_filename, mode,algorithm,encrypt_mode,password) != LOADING_OK){
             fprintf(stderr, "Error: No se ha podido cargar la imagen con contenido oculto. Compruebe que la ruta \"%s\" sea correcta.\n\n", args_info->p_arg);
             exit(EXIT_FAILURE);
         }
