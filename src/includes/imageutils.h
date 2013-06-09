@@ -10,13 +10,6 @@
 #include "cmdline.h"
 #define LOADING_OK 0
 
-typedef struct
-{   
-    unsigned char blue;
-    unsigned char green;
-    unsigned char red;
-} Rgb;
-
 struct bmp_image {
     char *filename;
     int width;
@@ -28,7 +21,6 @@ struct bmp_image {
     char * data;
     int  size;
     char * extension;
-  //  Rgb * bitmap;
 };
 
 typedef struct bmp_image * BmpImage;

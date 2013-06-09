@@ -24,7 +24,7 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
     for(i=0; i<4; i++){
         *(((char*)&size)+3-i)=get_lsbe(fp);
     }
-    printf("NUEVO SIZE:%d\n", size);
+ //   printf("NUEVO SIZE:%d\n", size);
 
     msg = calloc(size+10, sizeof(char));
     ext = calloc(10, sizeof(char));
@@ -73,7 +73,7 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
     for(i=0; i<4; i++){
        *(((char*)&size)+3-i)=get_lsb4(fp);
     }
-    printf("NUEVO SIZE:%d\n", size);
+//    printf("NUEVO SIZE:%d\n", size);
 
     msg = calloc(size+10, sizeof(char));
     ext = calloc(10, sizeof(char));
@@ -122,7 +122,7 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
         *(((char*)&size)+3-i)=get_lsb1(fp);
 	
     }
-    	printf("NUEVO SIZE:%d\n", size);
+//    printf("NUEVO SIZE:%d\n", size);
 
     msg = calloc(size+10, sizeof(char));
     ext = calloc(10, sizeof(char));
@@ -162,37 +162,37 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     FCHK(fwrite(image->data, (size_t)image->size, sizeof(char), salida)); 
 }
 
-char get_lsb1(FILE* in){
+char get_lsb1(FILE* fp){
     int i;
-    char byte=0, hidden;
+    char byte=0, oculto;
     for(i=0; i<8; i++){
-        hidden = fgetc(in);
-        char bit=(hidden&1);
+        oculto = fgetc(fp);
+        char bit=(oculto&1);
         byte|=(bit<<(7-(i%8)));
     }
     return byte;
 }
 
-char get_lsb4(FILE* in){
+char get_lsb4(FILE* fp){
     int i;
-    char byte=0, hidden;
+    char byte=0, oculto;
     for(i=0; i<2; i++){
-        hidden = fgetc(in);
-        char nibble=(hidden&0x0F);
+        oculto = fgetc(fp);
+        char nibble=(oculto&0x0F);
         byte|=nibble<<(1- i%2)*4;
     }
 
     return byte;
 }
 
-char get_lsbe(FILE* in){
+char get_lsbe(FILE* fp){
     int i;
-    char byte=0, hidden;
+    char byte=0, oculto;
     for(i=0; i<8; i++){
         do{
-            hidden = fgetc(in);
-        }while(!( hidden==(char)0xFF || hidden==(char)0xFE));
-        char bit=(hidden&1);
+            oculto = fgetc(fp);
+        }while(!( oculto==(char)0xFF || oculto==(char)0xFE));
+        char bit=(oculto&1);
         byte|=(bit<<(7-(i%8)));
     }
     return byte;
