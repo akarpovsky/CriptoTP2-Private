@@ -113,6 +113,7 @@ save_bmp_image(BmpImage im, char * filename)
     char *target = "./target/";
     strcpy (filepath, target);
     strcat (filepath, filename);
+    strcat (filepath,".bmp");
 
     FILE *fp;
     fp = fopen(filepath, "wb");
@@ -121,12 +122,6 @@ save_bmp_image(BmpImage im, char * filename)
         fseek(fp, 0x00, SEEK_SET);
         FCHK(fwrite(im->header, im->header_size, 1, fp));
         FCHK(fwrite(im->data, im->image_size, 1, fp));
-      /*  for( j=0; j<im->height; j++ ) {
-            for( i=0; i<im->width; i++ ) {
-              //  FCHK(fwrite(&(im->bitmap[(j*im->width) + i]), sizeof(Rgb), 1, fp));
-            }
-    }*/
-
         fclose(fp);
         return true;
     }
@@ -138,7 +133,6 @@ void
 free_bmp_image(struct bmp_image* im)
 {
     free(im->header);
-   // free(im->size);
     free(im->data);
 }
 

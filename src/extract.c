@@ -41,12 +41,12 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
    	         i++;
    	 }while(ext[i-1]);
 	 image->data=msg;
-	 *(image->size)=size;
+	 image->size=size;
 	 image->extension = ext;
     }else{
 		decryptedMsg=(unsigned char *)decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
 		image->data=decryptedMsg;
-	 	*(image->size)=decryptedSize;
+	 	image->size=decryptedSize;
 	 	image->extension = decryptedMsg+decryptedSize;
 		
 	}
@@ -57,7 +57,7 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
-    FCHK(fwrite(image->data, *(image->size), sizeof(char), salida)); 
+    FCHK(fwrite(image->data, image->size, sizeof(char), salida)); 
 
 }
 
@@ -90,12 +90,12 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
     	        i++;
     	}while(ext[i-1]);
 	 image->data=msg;
-	 *(image->size)=size;
+	 image->size=size;
 	 image->extension = ext;
     }else{
 		decryptedMsg=(unsigned char *)decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
 		image->data=decryptedMsg;
-	 	*(image->size)=decryptedSize;
+	 	image->size=decryptedSize;
 	 	image->extension = decryptedMsg+decryptedSize;
 		
 	}
@@ -118,7 +118,6 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     char * ext;
     char file_name[100];// = malloc(100); 
     unsigned char * decryptedMsg;
-    char file_name[100]={0};
     for(i=0; i<4; i++){
         *(((char*)&size)+3-i)=get_lsb1(fp);
 	
@@ -152,7 +151,7 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
 		for(i=0; i<4; i++){
 			*(((char*)&size)+3-i)=*(decryptedMsg+i);
 		}
-	 	*(image->size)=size;//decryptedSize-5-sizeof(DWORD);
+	 	image->size=size;//decryptedSize-5-sizeof(DWORD);
 	 	image->extension = decryptedMsg+size+sizeof(DWORD);
 		
 	}
