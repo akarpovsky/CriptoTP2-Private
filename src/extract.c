@@ -45,6 +45,7 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
+    //FCHK(fwrite(image->header, (size_t)image->header_size, sizeof(char), salida)); 
     FCHK(fwrite(image->data, (size_t)image->size, sizeof(char), salida)); 
 
 }
@@ -97,7 +98,7 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
-    FCHK(fwrite(image->data,(size_t) image->size, sizeof(char), salida)); 
+    FCHK(fwrite(image->data,image->size, sizeof(char), salida)); 
 
 }
 
@@ -106,7 +107,8 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
 
     int size, i, decryptedSize;
     char * msg;
-    char * ext; 
+    char * ext;
+    char file_name[100];// = malloc(100); 
     unsigned char * decryptedMsg;
     for(i=0; i<4; i++){
         *(((char*)&size)+3-i)=get_lsb1(fp);
@@ -115,6 +117,7 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
 
     msg = calloc(size+10, sizeof(char));
     ext = calloc(10, sizeof(char));
+
 
     for(i=0; i<size; i++){
         msg[i]=get_lsb1(fp);
@@ -127,10 +130,11 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     	        ext[i]=get_lsb1(fp);
     	        i++;
   	 }while(ext[i-1]);
+    
    
    	 image->data=msg;
    	 image->size=size;
-    	image->extension = ext;
+    image->extension = ext;
     }else{
 		decryptedMsg=(unsigned char *) decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
 		image->data=decryptedMsg;
@@ -139,12 +143,11 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
 		
 	}
  
-    char file_name[100];
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
     FCHK(fwrite(image->data, (size_t)image->size, sizeof(char), salida)); 
-
+   
 }
 
 char get_lsb1(FILE* in){

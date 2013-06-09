@@ -136,7 +136,7 @@ void
 free_bmp_image(struct bmp_image* im)
 {
     free(im->header);
-    free(im->size);
+   // free(im->size);
     free(im->data);
 }
 

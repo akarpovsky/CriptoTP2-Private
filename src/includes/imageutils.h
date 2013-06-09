@@ -26,7 +26,7 @@ struct bmp_image {
     int header_size;
     unsigned char *header;
     char * data;
-    int * size;
+    int  size;
     char * extension;
   //  Rgb * bitmap;
 };
