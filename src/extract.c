@@ -144,7 +144,7 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     }else{
 		
 		decryptedMsg=(unsigned char *) decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
-		printf("LA DATA ES %s\n",decryptedMsg+sizeof(DWORD));		
+			
 		image->data=decryptedMsg+sizeof(DWORD);
 		for(i=0; i<4; i++){
 			*(((char*)&size)+3-i)=*(decryptedMsg+i);
@@ -157,7 +157,7 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
-    printf("%s\n",image->data);
+    
     FCHK(fwrite(image->data, *(image->size), sizeof(char), salida)); 
 
 }
