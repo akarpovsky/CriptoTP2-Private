@@ -36,31 +36,23 @@ encrypt_LSB4(BmpImage image, char * bit_array, int bit_array_size){
     for(i=0;i<bit_array_size;){
 
         if ((bit_array[i++]%2) == 0){
-            printf("0");
             image_array[j] = image_array[j] & (char)(255-8);
         }else{
-            printf("1");
             image_array[j] = image_array[j] | (char)(8);
         }
         if ((bit_array[i++]%2) == 0){
-            printf("0");
             image_array[j] = image_array[j] & (char)(255-4);
         }else{
-            printf("1");
               image_array[j] = image_array[j] | (char)(4);
         }
         if ((bit_array[i++]%2) == 0){
-            printf("0");
             image_array[j] = image_array[j] & (char)(255-2);
         }else{
-            printf("1");
               image_array[j] = image_array[j] | (char)(2);
         }
         if ((bit_array[i++]%2) == 0){
-            printf("0");
             image_array[j] = image_array[j] & (char)(255-1);
         }else{
-            printf("1");
               image_array[j] = image_array[j] | (char)(1);
         }
         j++;

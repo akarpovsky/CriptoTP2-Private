@@ -93,23 +93,23 @@ int main(int argc, char **argv){
             exit(EXIT_FAILURE);
         }
 
-        printf("Armo el array de bits para estenografear: \n");
+       // printf("Armo el array de bits para estenografear: \n");
 
         char * bit_array = calloc(1,inl*8);
         for(h=0; h < inl*8; ++in)
         {
-            printf("%c => ", *in);
-            /* perform bitwise AND for every bit of the character */
+          //  printf("%c => ", *in);
+            /* Se hace el and bit a bit */
             for(i = 7; i >= 0; --i){
                 if (*in & 1 << i){
                     bit_array[h] = '1';
                 }else{
                     bit_array[h] = '0';
                 }
-                printf("%c",bit_array[h]);
+           //     printf("%c",bit_array[h]);
                 h++;
             }
-            putchar('\n');
+            //putchar('\n');
         }
 
         //Imprimo informacion sobre la imagen
@@ -126,7 +126,7 @@ int main(int argc, char **argv){
 	              		fprintf(stderr, "Error: La imagen no tiene la capacidad de almacenar el archivo, la capacidad maxima es %d.\n\n", image_capacity);
 	               		exit(EXIT_FAILURE);
 	            	}*/
-            printf("PASE TODO\n");
+            
             //Llamo a la funcion correspondiente dependiendo del modo
             if ( mode == LSB1 ){
              //   printf("ENTRO A LSB1");
@@ -142,7 +142,7 @@ int main(int argc, char **argv){
                 fprintf(stderr, "Error: No se ha podido crear el archivo de salida \"%s\".\n\n", args_info->out_arg);
                 exit(EXIT_FAILURE);
             }else{
-                printf("Creado el archivo de salida: \"%s\".\n\n", args_info->out_arg);
+                printf("Creado el archivo de salida: \"%s.bmp\"\n\n", args_info->out_arg);
             }
 
     }else{
