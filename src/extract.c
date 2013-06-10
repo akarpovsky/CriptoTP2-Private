@@ -20,6 +20,7 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
     char * msg;
     char * ext;
     unsigned char * decryptedMsg;
+    char file_name[100]={0};
   
     for(i=0; i<4; i++){
         *(((char*)&size)+3-i)=get_lsbe(fp);
@@ -44,16 +45,19 @@ int decrypt_LSBE(BmpImage image, char * out_filename, FILE * fp , char* algorith
 	 image->size=size;
 	 image->extension = ext;
     }else{
-		decryptedMsg=(unsigned char *)decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
-		image->data=decryptedMsg;
-	 	image->size=decryptedSize;
-	 	image->extension = decryptedMsg+decryptedSize;
+		decryptedMsg=(unsigned char *) decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
+			
+		image->data=decryptedMsg+sizeof(DWORD);
+		for(i=0; i<4; i++){
+			*(((char*)&size)+3-i)=*(decryptedMsg+i);
+		}
+	 	image->size=size;//decryptedSize-5-sizeof(DWORD);
+	 	image->extension = decryptedMsg+size+sizeof(DWORD);
 		
 	}
 
     	 
 
-    char file_name[100];
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
@@ -69,6 +73,7 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
     char * msg;
     char * ext;
     unsigned char * decryptedMsg;
+    char file_name[100]={0};
    
     for(i=0; i<4; i++){
        *(((char*)&size)+3-i)=get_lsb4(fp);
@@ -85,6 +90,7 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
     
     i = 0;
     if(password==NULL){
+	printf("SIN PASSWORD\n");
     	do{
     	        ext[i]=get_lsb4(fp);
     	        i++;
@@ -93,14 +99,17 @@ int decrypt_LSB4(BmpImage image, char * out_filename, FILE * fp ,char* algorithm
 	 image->size=size;
 	 image->extension = ext;
     }else{
-		decryptedMsg=(unsigned char *)decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
-		image->data=decryptedMsg;
-	 	image->size=decryptedSize;
-	 	image->extension = decryptedMsg+decryptedSize;
+		decryptedMsg=(unsigned char *) decryptData( algorithm, encrypt_mode, password,msg ,size ,&decryptedSize);
+			
+		image->data=decryptedMsg+sizeof(DWORD);
+		for(i=0; i<4; i++){
+			*(((char*)&size)+3-i)=*(decryptedMsg+i);
+		}
+	 	image->size=size;//decryptedSize-5-sizeof(DWORD);
+	 	image->extension = decryptedMsg+size+sizeof(DWORD);
 		
 	}
 
-    char file_name[100];
     strcpy (file_name,out_filename);
     strcat (file_name,image->extension);
     FILE * salida = fopen(file_name, "wb");
@@ -116,7 +125,7 @@ int decrypt_LSB1(BmpImage image, char * out_filename, FILE * fp, char* algorithm
     int size=0, i, decryptedSize;
     char * msg;
     char * ext;
-    char file_name[100];// = malloc(100); 
+    char file_name[100]={0};// = malloc(100); 
     unsigned char * decryptedMsg;
     for(i=0; i<4; i++){
         *(((char*)&size)+3-i)=get_lsb1(fp);

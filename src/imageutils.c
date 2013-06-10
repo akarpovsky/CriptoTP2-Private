@@ -7,7 +7,7 @@ create_bmp_image(char * filename)
     BmpImage ret = malloc(sizeof(struct bmp_image));
     ret->filename = malloc(strlen(filename) + 1);
     strcpy(ret->filename, filename);
-    ret->size= malloc(sizeof(int));
+    
     ret->extension=malloc(sizeof(char)*4);
     return ret;
 }
