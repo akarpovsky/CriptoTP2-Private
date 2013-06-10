@@ -125,10 +125,10 @@ int main(int argc, char **argv){
 		if(password != NULL){
 			char* encryptedData;	
 			int x=0;
-			printf("el mensaje a encriptar es %s",in+sizeof(DWORD));
+			// printf("El mensaje a encriptar es %s",in+sizeof(DWORD));
 			encryptedData=encryptData(algorithm ,encrypt_mode, password, (unsigned char *)in,inl, &encryptSize);
 			int endianSize2 = ntohl(encryptSize);
-			printf("EL ENCRYPT SIZE ES %d\n",encryptSize);
+			// printf("El encrypt size es %d\n",encryptSize);
 			encrypted_bit_array_size= encryptSize+sizeof(DWORD)+ 1;
 
      			char* dataToTransorm=calloc(1,encrypted_bit_array_size);
@@ -155,7 +155,7 @@ int main(int argc, char **argv){
          	}
             
 
-}
+        }
 		
 
 
@@ -223,18 +223,4 @@ if ( strcmp(estenografia,"LSB1") == 0){
     }else if(strcmp(estenografia,"LSBE") == 0){
         *mode = LSBE;
     }
-}
-
-unsigned char *
-paddingPKCS5(unsigned char *in, int *inl, size_t blocksize) {
-    int pad;
-    int i;
-    unsigned char *inPad;
-    pad = blocksize - (*inl) % blocksize;
-    inPad = malloc(*inl + pad);
-    memcpy(inPad, in, *inl);
-    for (i = (*inl); i < (*inl + pad); i++)
-        inPad[i] = pad;
-    *inl +=pad;
-    return (inPad);
 }

@@ -133,24 +133,6 @@ free_bmp_image(struct bmp_image* im)
     free(im->data);
 }
 
-BmpImage 
-duplicate(BmpImage im, char * filename) {
-    BmpImage ret = malloc(sizeof(struct bmp_image));
-
-    ret->filename = filename;
-    ret->width = im->width;
-    ret->height = im->height;
-    ret->pixel_bits = im->pixel_bits;
-    ret->image_size = im->image_size;
-    ret->header_size = im->header_size;
-    ret->header = malloc(im->header_size);
- //   ret->bitmap = malloc(im->image_size);
-    memcpy(ret->header, im->header, im->header_size);
-   // memcpy(ret->bitmap, im->bitmap, im->image_size);
-
-    return ret;
-}
-
 void 
 print_bmp_image(BmpImage im) {
     printf("\n*************** IMAGE DATA ***************\n");
@@ -163,16 +145,6 @@ print_bmp_image(BmpImage im) {
     printf("******************************************\n\n");
 }
 
-void
-print_bmp_bitmap(BmpImage im){
-    int i,j;
-    for( j=0; j<im->height; j++ ) {
-        printf( "------ Row %d\n", j+1 );
-        for( i=0; i<im->width; i++ ) {
-          //  printf( "Pixel %d: %3d %3d %3d\n", i+1, im->bitmap[(j*im->width) + i].red, im->bitmap[(j*im->width) + i].green, im->bitmap[(j*im->width) + i].blue );
-        }
-    }
-}
 
 void 
 printUserArguments(struct gengetopt_args_info *args_info){
