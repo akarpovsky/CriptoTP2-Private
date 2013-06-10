@@ -141,18 +141,17 @@ int main(int argc, char **argv){
 			}	
 
 			for(x=0; x < encrypted_bit_array_size*8; ++dataToTransorm){
-        			printf("%c => ", *dataToTransorm);
-         			// perform bitwise AND for every bit of the character
+        			
          			for(i = 7; i >= 0; --i){
          				if (*dataToTransorm & 1 << i){
          					encrypted_bit_array[x] = '1';
          				}else{
          					encrypted_bit_array[x] = '0';
          				}
-         				printf("%c",encrypted_bit_array[x]);
+         				
          				x++;
          			}
-         		putchar('\n');
+         		
          	}
             
 
